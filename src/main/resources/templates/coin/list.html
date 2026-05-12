@@ -58,7 +58,9 @@
                         <td class="align-middle" th:text="${c.symbol}">BTC</td>
                         <td class="align-middle" th:text="${c.coingeckoId}">bitcoin</td>
                         <td class="text-end pe-4 align-middle">
-                            <button type="button" class="btn btn-sm btn-outline-info border-0 me-2" title="Güncelle" data-bs-toggle="modal" th:data-bs-target="'#updateCoinModal' + ${c.id}">
+                            <button type="button" class="btn btn-sm btn-outline-info border-0 me-2" title="Güncelle"
+                                    th:data-id="${c.id}" th:data-name="${c.name}" th:data-symbol="${c.symbol}" th:data-geckoId="${c.coingeckoId}"
+                                    onclick="openUpdateCoinModal(this)">
                                 <i class="bi bi-pencil"></i> Güncelle
                             </button>
                             <form th:action="@{/coins/delete/{id}(id=${c.id})}" method="post" class="d-inline">
@@ -66,42 +68,6 @@
                                     <i class="bi bi-trash"></i> Sil
                                 </button>
                             </form>
-
-                            <!-- Update Modal -->
-                            <div class="modal fade" th:id="'updateCoinModal' + ${c.id}" tabindex="-1">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content auth-card border-0" style="background: #1a1a2e; text-align: left;">
-                                        <div class="modal-header border-bottom border-secondary">
-                                            <h5 class="modal-title text-white">Coin Güncelle</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <form th:action="@{/coins/update/{id}(id=${c.id})}" method="post" enctype="multipart/form-data">
-                                            <div class="modal-body">
-                                                <div class="mb-3">
-                                                    <label class="form-label text-secondary small">Coin Adı</label>
-                                                    <input type="text" name="name" class="form-control form-control-dark" th:value="${c.name}" required>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label text-secondary small">Sembol</label>
-                                                    <input type="text" name="symbol" class="form-control form-control-dark" th:value="${c.symbol}" required>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label text-secondary small">CoinGecko ID</label>
-                                                    <input type="text" name="coingeckoId" class="form-control form-control-dark" th:value="${c.coingeckoId}">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label text-secondary small">Yeni Logo (Opsiyonel)</label>
-                                                    <input type="file" name="logoFile" class="form-control form-control-dark" accept="image/*">
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer border-top border-secondary">
-                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
-                                                <button type="submit" class="btn btn-info-gradient text-white">Güncelle</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
                         </td>
                     </tr>
                     </tbody>
@@ -114,7 +80,55 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/footer :: scripts}"></div>
+
+<!-- Coin Ekleme Modal (fragment) -->
 <div th:replace="~{fragments/modals :: addCoinModal}"></div>
+
+<!-- Coin Güncelleme Modal (TEK modal, JS ile doldurulur) -->
+<div class="modal fade" id="updateCoinModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil-square me-2 text-info"></i>Coin Güncelle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="updateCoinForm" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Coin Adı</label>
+                        <input type="text" name="name" id="updateCoinName" class="form-control form-control-dark" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sembol</label>
+                        <input type="text" name="symbol" id="updateCoinSymbol" class="form-control form-control-dark" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">CoinGecko ID</label>
+                        <input type="text" name="coingeckoId" id="updateCoinGeckoId" class="form-control form-control-dark">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Yeni Logo (Opsiyonel)</label>
+                        <input type="file" name="logoFile" class="form-control form-control-dark" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-info-gradient text-white">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openUpdateCoinModal(btn) {
+        document.getElementById('updateCoinName').value = btn.dataset.name;
+        document.getElementById('updateCoinSymbol').value = btn.dataset.symbol;
+        document.getElementById('updateCoinGeckoId').value = btn.dataset.geckoid || '';
+        document.getElementById('updateCoinForm').action = '/coins/update/' + btn.dataset.id;
+        new bootstrap.Modal(document.getElementById('updateCoinModal')).show();
+    }
+</script>
 
 </body>
 </html>

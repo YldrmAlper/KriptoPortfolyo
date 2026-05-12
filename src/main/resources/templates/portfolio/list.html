@@ -76,7 +76,6 @@
                                 <img th:if="${item.coinLogoBase64 != null}"
                                      th:src="'data:' + ${item.coinLogoContentType} + ';base64,' + ${item.coinLogoBase64}"
                                      class="coin-logo me-3" alt="logo">
-                                <!-- Base64 Yoksa Alternatif URL (ImageController) Kullanımı -->
                                 <img th:unless="${item.coinLogoBase64 != null}"
                                      th:src="@{/images/coin/{id}(id=${item.coinId})}"
                                      class="coin-logo me-3" alt="logo"
@@ -113,6 +112,21 @@
                         
                         <!-- İşlemler -->
                         <td class="text-center pe-4">
+                            <button type="button" class="btn btn-sm btn-outline-info border-0 me-1" title="Güncelle"
+                                    th:data-id="${item.id}"
+                                    th:data-quantity="${item.quantity}"
+                                    th:data-cost="${item.costPerUnit}"
+                                    onclick="openUpdatePortfolioModal(this)">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-warning border-0 me-1" title="Sat"
+                                    th:data-id="${item.id}"
+                                    th:data-coinname="${item.coinName}"
+                                    th:data-symbol="${item.coinSymbol}"
+                                    th:data-quantity="${item.quantity}"
+                                    onclick="openSellModal(this)">
+                                <i class="bi bi-cash-coin"></i>
+                            </button>
                             <form th:action="@{/portfolio/delete/{id}(id=${item.id})}" method="post" class="d-inline">
                                 <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Sil" onclick="return confirm('Bu varlığı silmek istediğinize emin misiniz?');">
                                     <i class="bi bi-trash"></i>
@@ -137,10 +151,78 @@
 <div th:replace="~{fragments/modals :: addExchangeModal}"></div>
 <div th:replace="~{fragments/modals :: addCoinModal}"></div>
 
-<!-- Basit Arama ve Hata Modalı Gösterme Scripti -->
+<!-- Portföy Güncelleme Modal -->
+<div class="modal fade" id="updatePortfolioModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil-square me-2 text-accent"></i>Varlık Güncelle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="updatePortfolioForm" method="post">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Adet</label>
+                            <input type="number" step="0.00000001" name="quantity" id="updateQuantity" class="form-control form-control-dark" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Birim Maliyet ($)</label>
+                            <input type="number" step="0.00000001" name="costPerUnit" id="updateCostPerUnit" class="form-control form-control-dark" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary-gradient">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Coin Satış Modal -->
+<div class="modal fade" id="sellModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-cash-coin me-2 text-warning"></i>Varlık Sat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="sellForm" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <span class="text-secondary">Coin:</span>
+                        <span id="sellCoinName" class="fw-bold text-light ms-2">—</span>
+                        <span id="sellCoinSymbol" class="text-secondary ms-1">(—)</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-secondary">Mevcut Miktar:</span>
+                        <span id="sellMaxQty" class="fw-bold text-info ms-2">—</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Satış Adedi</label>
+                            <input type="number" step="0.00000001" name="sellQuantity" id="sellQuantity" class="form-control form-control-dark" required min="0.00000001">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Satış Fiyatı ($/Adet)</label>
+                            <input type="number" step="0.00000001" name="sellPrice" id="sellPrice" class="form-control form-control-dark" required min="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-warning-gradient">Sat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Arama, Güncelleme ve Satış Scriptleri -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Arama Kutusu Filtreleme (Frontend Tarafında Basit Filtreleme)
         const searchInput = document.getElementById("searchInput");
         const tableRows = document.querySelectorAll(".portfolio-table tbody tr");
 
@@ -161,6 +243,24 @@
             });
         }
     });
+
+    function openUpdatePortfolioModal(btn) {
+        document.getElementById('updateQuantity').value = btn.dataset.quantity;
+        document.getElementById('updateCostPerUnit').value = btn.dataset.cost;
+        document.getElementById('updatePortfolioForm').action = '/portfolio/update/' + btn.dataset.id;
+        new bootstrap.Modal(document.getElementById('updatePortfolioModal')).show();
+    }
+
+    function openSellModal(btn) {
+        document.getElementById('sellCoinName').textContent = btn.dataset.coinname;
+        document.getElementById('sellCoinSymbol').textContent = '(' + btn.dataset.symbol + ')';
+        document.getElementById('sellMaxQty').textContent = btn.dataset.quantity;
+        document.getElementById('sellQuantity').max = btn.dataset.quantity;
+        document.getElementById('sellQuantity').value = '';
+        document.getElementById('sellPrice').value = '';
+        document.getElementById('sellForm').action = '/portfolio/sell/' + btn.dataset.id;
+        new bootstrap.Modal(document.getElementById('sellModal')).show();
+    }
 </script>
 
 </body>

@@ -53,7 +53,8 @@
                         </td>
                         <td class="fw-bold align-middle" th:text="${ex.name}">Binance</td>
                         <td class="text-end pe-4 align-middle">
-                            <button type="button" class="btn btn-sm btn-outline-info border-0 me-2" title="Güncelle" data-bs-toggle="modal" th:data-bs-target="'#updateExchangeModal' + ${ex.id}">
+                            <button type="button" class="btn btn-sm btn-outline-info border-0 me-2" title="Güncelle"
+                                    th:onclick="'openUpdateExchangeModal(' + ${ex.id} + ', \'' + ${ex.name} + '\')'">
                                 <i class="bi bi-pencil"></i> Güncelle
                             </button>
                             <form th:action="@{/exchanges/delete/{id}(id=${ex.id})}" method="post" class="d-inline">
@@ -61,34 +62,6 @@
                                     <i class="bi bi-trash"></i> Sil
                                 </button>
                             </form>
-
-                            <!-- Update Modal -->
-                            <div class="modal fade" th:id="'updateExchangeModal' + ${ex.id}" tabindex="-1">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content auth-card border-0" style="background: #1a1a2e; text-align: left;">
-                                        <div class="modal-header border-bottom border-secondary">
-                                            <h5 class="modal-title text-white">Borsayı Güncelle</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <form th:action="@{/exchanges/update/{id}(id=${ex.id})}" method="post" enctype="multipart/form-data">
-                                            <div class="modal-body">
-                                                <div class="mb-3">
-                                                    <label class="form-label text-secondary small">Borsa Adı</label>
-                                                    <input type="text" name="name" class="form-control form-control-dark" th:value="${ex.name}" required>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label text-secondary small">Yeni Logo (Opsiyonel)</label>
-                                                    <input type="file" name="logoFile" class="form-control form-control-dark" accept="image/*">
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer border-top border-secondary">
-                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
-                                                <button type="submit" class="btn btn-warning-gradient">Güncelle</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
                         </td>
                     </tr>
                     </tbody>
@@ -101,7 +74,45 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/footer :: scripts}"></div>
+
+<!-- Borsa Ekleme Modal (fragment) -->
 <div th:replace="~{fragments/modals :: addExchangeModal}"></div>
+
+<!-- Borsa Güncelleme Modal (TEK modal, JS ile doldurulur) -->
+<div class="modal fade" id="updateExchangeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil-square me-2 text-warning"></i>Borsayı Güncelle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="updateExchangeForm" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Borsa Adı</label>
+                        <input type="text" name="name" id="updateExchangeName" class="form-control form-control-dark" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Yeni Logo (Opsiyonel)</label>
+                        <input type="file" name="logoFile" class="form-control form-control-dark" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-warning-gradient">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openUpdateExchangeModal(id, name) {
+        document.getElementById('updateExchangeName').value = name;
+        document.getElementById('updateExchangeForm').action = '/exchanges/update/' + id;
+        new bootstrap.Modal(document.getElementById('updateExchangeModal')).show();
+    }
+</script>
 
 </body>
 </html>

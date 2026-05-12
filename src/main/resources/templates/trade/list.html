@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="tr">
+<head th:replace="~{fragments/header :: head('İşlem Geçmişi — KriptoPortföy')}"></head>
+<body>
+
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="page-content">
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="section-title mb-1">
+                    <i class="bi bi-clock-history me-2" style="color: #f7931a;"></i>İşlem Geçmişi
+                </h3>
+                <p class="section-subtitle mb-0">Tüm alış ve satış işlemleriniz ile kar/zarar takibi.</p>
+            </div>
+        </div>
+
+        <!-- Özet Kartları -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4 col-6">
+                <div class="stat-card">
+                    <div class="stat-value"
+                         th:classappend="${totalRealizedPnl >= 0 ? 'pnl-positive' : 'pnl-negative'}"
+                         th:text="(${totalRealizedPnl >= 0 ? '+' : ''}) + '$' + ${#numbers.formatDecimal(totalRealizedPnl, 1, 'COMMA', 2, 'POINT')}">
+                        $0.00
+                    </div>
+                    <div class="stat-label">Toplam Gerçekleşmiş Kar/Zarar</div>
+                </div>
+            </div>
+            <div class="col-md-4 col-6">
+                <div class="stat-card">
+                    <div class="stat-value" style="color: #f7931a;" th:text="${#lists.size(trades)}">0</div>
+                    <div class="stat-label">Toplam İşlem</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kar/Zarar Değişim Grafiği -->
+        <div class="dashboard-card mb-4">
+            <h5 class="text-white mb-3 border-bottom border-secondary pb-2">Kümülatif Kar/Zarar Grafiği</h5>
+            <div style="height: 300px; position: relative;">
+                <canvas id="pnlChart"></canvas>
+            </div>
+        </div>
+
+        <!-- İşlem Tablosu -->
+        <div class="dashboard-card p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-dark table-borderless portfolio-table mb-0 text-white" style="--bs-table-bg: transparent;">
+                    <thead style="background: rgba(0,0,0,0.3);">
+                    <tr>
+                        <th class="ps-4">Tarih</th>
+                        <th>Tür</th>
+                        <th>Coin</th>
+                        <th>Borsa</th>
+                        <th class="text-end">Miktar</th>
+                        <th class="text-end">Fiyat/Adet</th>
+                        <th class="text-end">Toplam</th>
+                        <th class="text-end pe-4">Kar/Zarar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(trades)}">
+                        <td colspan="8" class="text-center py-5 text-secondary">
+                            <i class="bi bi-clock-history fs-1 mb-2 d-block"></i>
+                            <p>Henüz işlem yapılmamış. Portföyden varlık satarak işlem oluşturabilirsiniz.</p>
+                        </td>
+                    </tr>
+                    <tr th:each="t : ${trades}">
+                        <td class="ps-4" th:text="${#temporals.format(t.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2026</td>
+                        <td>
+                            <span class="badge" th:classappend="${t.type == 'SELL' ? 'bg-danger' : 'bg-success'}" th:text="${t.type == 'SELL' ? 'SATIŞ' : 'ALIŞ'}">SATIŞ</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold" th:text="${t.coinName}">Bitcoin</span>
+                            <span class="text-secondary small ms-1" th:text="'(' + ${t.coinSymbol} + ')'"></span>
+                        </td>
+                        <td th:text="${t.exchangeName}">Binance</td>
+                        <td class="text-end" th:text="${#numbers.formatDecimal(t.quantity, 1, 'COMMA', 4, 'POINT')}">0.5</td>
+                        <td class="text-end" th:text="'$' + ${#numbers.formatDecimal(t.pricePerUnit, 1, 'COMMA', 2, 'POINT')}">$50,000</td>
+                        <td class="text-end fw-bold text-info" th:text="'$' + ${#numbers.formatDecimal(t.totalValue, 1, 'COMMA', 2, 'POINT')}">$25,000</td>
+                        <td class="text-end pe-4"
+                            th:classappend="${t.realizedPnl != null and t.realizedPnl >= 0 ? 'pnl-positive' : 'pnl-negative'}"
+                            th:text="${t.realizedPnl != null ? (t.realizedPnl >= 0 ? '+' : '') + '$' + #numbers.formatDecimal(t.realizedPnl, 1, 'COMMA', 2, 'POINT') : '—'}">
+                            $0.00
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        /*<![CDATA[*/
+        var trades = /*[[${trades}]]*/ [];
+        /*]]>*/
+
+        // Satış işlemlerini tarihe göre sıralayıp kümülatif PnL hesapla
+        var sellTrades = trades.filter(function(t) { return t.type === 'SELL'; }).reverse();
+        var labels = [];
+        var cumulativeData = [];
+        var cumulative = 0;
+
+        sellTrades.forEach(function(t) {
+            var dateStr = t.createdAt ? new Date(t.createdAt).toLocaleDateString('tr-TR') : '—';
+            labels.push(dateStr + ' ' + t.coinSymbol);
+            cumulative += (t.realizedPnl || 0);
+            cumulativeData.push(cumulative);
+        });
+
+        if (labels.length === 0) {
+            labels.push('Henüz veri yok');
+            cumulativeData.push(0);
+        }
+
+        var ctx = document.getElementById('pnlChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Kümülatif Kar/Zarar ($)',
+                    data: cumulativeData,
+                    borderColor: cumulative >= 0 ? '#00b894' : '#e74c3c',
+                    backgroundColor: cumulative >= 0 ? 'rgba(0, 184, 148, 0.1)' : 'rgba(231, 76, 60, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#e8e8e8', font: { family: 'Inter' } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return 'PnL: $' + ctx.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#8b8b9e', font: { size: 10 } },
+                        grid: { color: 'rgba(255,255,255,0.05)' }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#8b8b9e',
+                            callback: function(value) { return '$' + value; }
+                        },
+                        grid: { color: 'rgba(255,255,255,0.05)' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

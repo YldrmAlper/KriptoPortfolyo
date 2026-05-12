@@ -22,6 +22,7 @@ public class PortfolioItemViewDto {
     private String coinSymbol;
     private String exchangeName;
     private String source; // "MANUAL" veya "API"
+    private String coingeckoId; // CoinGecko API eşleştirme ID'si
 
     // Miktar ve Maliyet
     private BigDecimal quantity;
