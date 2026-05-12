@@ -1,235 +1,254 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
 
 <head th:replace="~{fragments/header :: head('Dashboard — KriptoPortföy')}">
 </head>
 
 <body>
 
-<!-- Navbar -->
-<nav th:replace="~{fragments/header :: navbar}"></nav>
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/header :: navbar}"></nav>
 
-<div class="page-content">
-    <div class="container">
+    <div class="page-content">
+        <div class="container">
 
-        <!-- Hoşgeldin Mesajı -->
-        <div class="mb-4 d-flex justify-content-between align-items-center">
-            <div>
-                <h3 class="section-title">
-                    <i class="bi bi-speedometer2 me-2" style="color: #00d2ff;"></i>
-                    Hoş geldin, <span th:text="${currentUser}" style="color: #00d2ff;">Kullanıcı</span>!
-                </h3>
-                <p class="section-subtitle">Portföyünüzün anlık Kar/Zarar durumu.</p>
+            <!-- Hoşgeldin Mesajı -->
+            <div class="mb-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="section-title">
+                        <i class="bi bi-speedometer2 me-2" style="color: #00d2ff;"></i>
+                        Hoş geldin, <span th:text="${currentUser}" style="color: #00d2ff;">Kullanıcı</span>!
+                    </h3>
+                    <p class="section-subtitle">Portföyünüzün anlık Kar/Zarar durumu.</p>
+                </div>
+                <div>
+                    <a th:href="@{/portfolio}" class="btn btn-outline-info me-2">
+                        <i class="bi bi-wallet2 me-1"></i> Manuel Ekle
+                    </a>
+                    <a th:href="@{/api-keys}" class="btn btn-warning-gradient">
+                        <i class="bi bi-link-45deg me-1"></i> Borsa Bağla
+                    </a>
+                </div>
             </div>
-            <div>
-                <a th:href="@{/portfolio}" class="btn btn-outline-info me-2">
-                    <i class="bi bi-wallet2 me-1"></i> Manuel Ekle
-                </a>
-                <a th:href="@{/api-keys}" class="btn btn-warning-gradient">
-                    <i class="bi bi-link-45deg me-1"></i> Borsa Bağla
-                </a>
+
+            <!-- Özet Kartları -->
+            <div class="row g-3 mb-4">
+                <!-- Toplam Değer -->
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #00d2ff;"
+                            th:text="'$' + ${#numbers.formatDecimal(summary.totalPortfolioValue, 1, 'COMMA', 2, 'POINT')}">
+                            $0.00
+                        </div>
+                        <div class="stat-label">Toplam Değer</div>
+                    </div>
+                </div>
+
+                <!-- Kar / Zarar -->
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-value"
+                            th:classappend="${summary.totalProfitLoss > 0 ? 'pnl-positive' : (summary.totalProfitLoss < 0 ? 'pnl-negative' : 'pnl-neutral')}"
+                            th:text="(${summary.totalProfitLoss > 0 ? '+' : ''}) + '$' + ${#numbers.formatDecimal(summary.totalProfitLoss, 1, 'COMMA', 2, 'POINT')}">
+                            $0.00
+                        </div>
+                        <div class="stat-label">
+                            Net Kar/Zarar
+                            <span
+                                th:classappend="${summary.totalProfitLossPercentage > 0 ? 'pnl-positive' : (summary.totalProfitLossPercentage < 0 ? 'pnl-negative' : 'pnl-neutral')}"
+                                th:text="'(' + (${summary.totalProfitLossPercentage > 0 ? '+' : ''}) + ${#numbers.formatDecimal(summary.totalProfitLossPercentage, 1, 'COMMA', 2, 'POINT')} + '%)'">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Varlık Sayısı -->
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #f7931a;" th:text="${summary.totalAssetsCount}">0</div>
+                        <div class="stat-label">Takip Edilen Varlık</div>
+                    </div>
+                </div>
+
+                <!-- Aktif Borsa -->
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #00b894;" th:text="${summary.activeExchangesCount}">0
+                        </div>
+                        <div class="stat-label">Bağlı Borsa</div>
+                    </div>
+                </div>
             </div>
+
+            <!-- Grafikler ve Tablo -->
+            <div class="row mb-4">
+                <!-- Portföy Dağılım Grafiği (Chart.js) -->
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="dashboard-card h-100 d-flex flex-column align-items-center justify-content-center">
+                        <h5 class="text-white mb-3 text-start w-100 border-bottom border-secondary pb-2">Portföy
+                            Dağılımı</h5>
+                        <div style="width: 100%; max-width: 250px; position: relative;">
+                            <canvas id="portfolioChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Varlık Listesi Tablosu -->
+                <div class="col-md-8">
+                    <div class="dashboard-card p-0 overflow-hidden h-100">
+                        <div class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center"
+                            style="background: rgba(255,255,255,0.02);">
+                            <h5 class="text-white mb-0">Tüm Varlıklar (Canlı Fiyatlar)</h5>
+                            <small class="text-secondary"><i class="bi bi-info-circle me-1"></i>Detaylı grafik için
+                                satıra tıklayın</small>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table portfolio-table mb-0 text-white">
+                                <thead style="background: rgba(0,0,0,0.2);">
+                                    <tr>
+                                        <th class="ps-4">Varlık</th>
+                                        <th>Kaynak</th>
+                                        <th class="text-end">Miktar</th>
+                                        <th class="text-end">Maliyet/Adet</th>
+                                        <th class="text-end">Güncel Fiyat</th>
+                                        <th class="text-end">Güncel Değer</th>
+                                        <th class="text-end pe-4">Kar/Zarar (PnL)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(summary.detailedItems)}">
+                                        <td colspan="7" class="text-center py-5 text-secondary">
+                                            <i class="bi bi-inbox fs-1 mb-2 d-block"></i>
+                                            <p>Görüntülenecek varlık yok. Manuel ekleyin veya borsa bağlayın.</p>
+                                        </td>
+                                    </tr>
+
+                                    <tr th:each="item : ${summary.detailedItems}" style="cursor: pointer;"
+                                        th:onclick="'window.location.href=\'/chart/detail?symbol=' + ${item.coinSymbol} + '\''"
+                                        class="hover-row">
+                                        <!-- Varlık -->
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div>
+                                                    <div class="fw-bold text-light" th:text="${item.coinName}">Bitcoin
+                                                    </div>
+                                                    <div class="text-secondary small" th:text="${item.coinSymbol}">BTC
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Kaynak -->
+                                        <td>
+                                            <span class="badge bg-secondary" th:if="${item.source == 'MANUAL'}"
+                                                th:text="${item.exchangeName}"></span>
+                                            <span class="badge bg-warning text-dark" th:if="${item.source == 'API'}"
+                                                th:text="${item.exchangeName} + ' (API)'"></span>
+                                        </td>
+
+                                        <!-- Miktar -->
+                                        <td class="text-end"
+                                            th:text="${#numbers.formatDecimal(item.quantity, 1, 'COMMA', 4, 'POINT')}">
+                                            0.0</td>
+
+                                        <!-- Maliyet -->
+                                        <td class="text-end text-secondary"
+                                            th:text="'$' + ${#numbers.formatDecimal(item.costPerUnit, 1, 'COMMA', 2, 'POINT')}">
+                                            $0.00</td>
+
+                                        <!-- Güncel Fiyat -->
+                                        <td class="text-end fw-medium text-light"
+                                            th:text="'$' + ${#numbers.formatDecimal(item.currentPrice, 1, 'COMMA', 2, 'POINT')}">
+                                            $0.00</td>
+
+                                        <!-- Güncel Değer -->
+                                        <td class="text-end fw-bold" style="color: #00d2ff;"
+                                            th:text="'$' + ${#numbers.formatDecimal(item.currentValue, 1, 'COMMA', 2, 'POINT')}">
+                                            $0.00</td>
+
+                                        <!-- PnL -->
+                                        <td class="text-end pe-4"
+                                            th:classappend="${item.profitLoss > 0 ? 'pnl-positive' : (item.profitLoss < 0 ? 'pnl-negative' : 'pnl-neutral')}">
+                                            <div
+                                                th:text="(${item.profitLoss > 0 ? '+' : ''}) + '$' + ${#numbers.formatDecimal(item.profitLoss, 1, 'COMMA', 2, 'POINT')}">
+                                            </div>
+                                            <div class="small"
+                                                th:text="'(' + (${item.profitLossPercentage > 0 ? '+' : ''}) + ${#numbers.formatDecimal(item.profitLossPercentage, 1, 'COMMA', 2, 'POINT')} + '%)'">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-
-        <!-- Özet Kartları -->
-        <div class="row g-3 mb-4">
-            <!-- Toplam Değer -->
-            <div class="col-md-3 col-6">
-                <div class="stat-card">
-                    <div class="stat-value" style="color: #00d2ff;" 
-                         th:text="'$' + ${#numbers.formatDecimal(summary.totalPortfolioValue, 1, 'COMMA', 2, 'POINT')}">
-                        $0.00
-                    </div>
-                    <div class="stat-label">Toplam Değer</div>
-                </div>
-            </div>
-            
-            <!-- Kar / Zarar -->
-            <div class="col-md-3 col-6">
-                <div class="stat-card">
-                    <div class="stat-value" 
-                         th:classappend="${summary.totalProfitLoss > 0 ? 'pnl-positive' : (summary.totalProfitLoss < 0 ? 'pnl-negative' : 'pnl-neutral')}"
-                         th:text="(${summary.totalProfitLoss > 0 ? '+' : ''}) + '$' + ${#numbers.formatDecimal(summary.totalProfitLoss, 1, 'COMMA', 2, 'POINT')}">
-                        $0.00
-                    </div>
-                    <div class="stat-label">
-                        Net Kar/Zarar 
-                        <span th:classappend="${summary.totalProfitLossPercentage > 0 ? 'pnl-positive' : (summary.totalProfitLossPercentage < 0 ? 'pnl-negative' : 'pnl-neutral')}"
-                              th:text="'(' + (${summary.totalProfitLossPercentage > 0 ? '+' : ''}) + ${#numbers.formatDecimal(summary.totalProfitLossPercentage, 1, 'COMMA', 2, 'POINT')} + '%)'">
-                        </span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Varlık Sayısı -->
-            <div class="col-md-3 col-6">
-                <div class="stat-card">
-                    <div class="stat-value" style="color: #f7931a;" th:text="${summary.totalAssetsCount}">0</div>
-                    <div class="stat-label">Takip Edilen Varlık</div>
-                </div>
-            </div>
-            
-            <!-- Aktif Borsa -->
-            <div class="col-md-3 col-6">
-                <div class="stat-card">
-                    <div class="stat-value" style="color: #00b894;" th:text="${summary.activeExchangesCount}">0</div>
-                    <div class="stat-label">Bağlı Borsa</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Grafikler ve Tablo -->
-        <div class="row mb-4">
-            <!-- Portföy Dağılım Grafiği (Chart.js) -->
-            <div class="col-md-4 mb-4 mb-md-0">
-                <div class="dashboard-card h-100 d-flex flex-column align-items-center justify-content-center">
-                    <h5 class="text-white mb-3 text-start w-100 border-bottom border-secondary pb-2">Portföy Dağılımı</h5>
-                    <div style="width: 100%; max-width: 250px; position: relative;">
-                        <canvas id="portfolioChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Varlık Listesi Tablosu -->
-            <div class="col-md-8">
-                <div class="dashboard-card p-0 overflow-hidden h-100">
-                    <div class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02);">
-                        <h5 class="text-white mb-0">Tüm Varlıklar (Canlı Fiyatlar)</h5>
-                        <small class="text-secondary"><i class="bi bi-info-circle me-1"></i>Detaylı grafik için satıra tıklayın</small>
-                    </div>
-
-            <div class="table-responsive">
-                <table class="table table-dark table-borderless portfolio-table mb-0 text-white" style="--bs-table-bg: transparent;">
-                    <thead style="background: rgba(0,0,0,0.3);">
-                    <tr>
-                        <th class="ps-4">Varlık</th>
-                        <th>Kaynak</th>
-                        <th class="text-end">Miktar</th>
-                        <th class="text-end">Maliyet/Adet</th>
-                        <th class="text-end">Güncel Fiyat</th>
-                        <th class="text-end">Güncel Değer</th>
-                        <th class="text-end pe-4">Kar/Zarar (PnL)</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:if="${#lists.isEmpty(summary.detailedItems)}">
-                        <td colspan="7" class="text-center py-5 text-secondary">
-                            <i class="bi bi-inbox fs-1 mb-2 d-block"></i>
-                            <p>Görüntülenecek varlık yok. Manuel ekleyin veya borsa bağlayın.</p>
-                        </td>
-                    </tr>
-                    
-                    <tr th:each="item : ${summary.detailedItems}" 
-                        style="cursor: pointer;" 
-                        th:data-symbol="${item.coinSymbol}"
-                        onclick="window.location.href='/chart/detail?symbol=' + this.getAttribute('data-symbol')"
-                        class="hover-row">
-                        <!-- Varlık -->
-                        <td class="ps-4">
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <div class="fw-bold text-light" th:text="${item.coinName}">Bitcoin</div>
-                                    <div class="text-secondary small" th:text="${item.coinSymbol}">BTC</div>
-                                </div>
-                            </div>
-                        </td>
-                        
-                        <!-- Kaynak -->
-                        <td>
-                            <span class="badge bg-secondary" th:if="${item.source == 'MANUAL'}" th:text="${item.exchangeName}"></span>
-                            <span class="badge bg-warning text-dark" th:if="${item.source == 'API'}" th:text="${item.exchangeName} + ' (API)'"></span>
-                        </td>
-                        
-                        <!-- Miktar -->
-                        <td class="text-end" th:text="${#numbers.formatDecimal(item.quantity, 1, 'COMMA', 4, 'POINT')}">0.0</td>
-                        
-                        <!-- Maliyet -->
-                        <td class="text-end text-secondary" th:text="'$' + ${#numbers.formatDecimal(item.costPerUnit, 1, 'COMMA', 2, 'POINT')}">$0.00</td>
-                        
-                        <!-- Güncel Fiyat -->
-                        <td class="text-end fw-medium text-light" th:text="'$' + ${#numbers.formatDecimal(item.currentPrice, 1, 'COMMA', 2, 'POINT')}">$0.00</td>
-                        
-                        <!-- Güncel Değer -->
-                        <td class="text-end fw-bold" style="color: #00d2ff;" th:text="'$' + ${#numbers.formatDecimal(item.currentValue, 1, 'COMMA', 2, 'POINT')}">$0.00</td>
-                        
-                        <!-- PnL -->
-                        <td class="text-end pe-4" 
-                            th:classappend="${item.profitLoss > 0 ? 'pnl-positive' : (item.profitLoss < 0 ? 'pnl-negative' : 'pnl-neutral')}">
-                            <div th:text="(${item.profitLoss > 0 ? '+' : ''}) + '$' + ${#numbers.formatDecimal(item.profitLoss, 1, 'COMMA', 2, 'POINT')}"></div>
-                            <div class="small" th:text="'(' + (${item.profitLossPercentage > 0 ? '+' : ''}) + ${#numbers.formatDecimal(item.profitLossPercentage, 1, 'COMMA', 2, 'POINT')} + '%)'"></div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-                </div>
-            </div>
-        </div>
-
     </div>
-</div>
 
-<footer th:replace="~{fragments/footer :: footer}"></footer>
-<div th:replace="~{fragments/footer :: scripts}"></div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/footer :: scripts}"></div>
 
-<!-- Chart.js Kütüphanesi -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js Kütüphanesi -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- AJAX Chart Render Scripti -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // AJAX ile Chart verisini çek
-        fetch('/api/charts/distribution')
-            .then(response => response.json())
-            .then(data => {
-                const ctx = document.getElementById('portfolioChart').getContext('2d');
-                
-                // Chart.js render
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: data.labels,
-                        datasets: [{
-                            data: data.data,
-                            backgroundColor: [
-                                '#f7931a', '#627eea', '#00d2ff', '#00b894', '#e74c3c', '#9b59b6', '#34495e'
-                            ],
-                            borderWidth: 0,
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: '#e8e8e8',
-                                    padding: 20,
-                                    font: { family: 'Inter', size: 12 }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) { label += ': '; }
-                                        if (context.parsed !== null) {
-                                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
+    <!-- AJAX Chart Render Scripti -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // AJAX ile Chart verisini çek
+            fetch('/api/charts/distribution')
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.getElementById('portfolioChart').getContext('2d');
+
+                    // Chart.js render
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                data: data.data,
+                                backgroundColor: [
+                                    '#f7931a', '#627eea', '#00d2ff', '#00b894', '#e74c3c', '#9b59b6', '#34495e'
+                                ],
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        color: '#e8e8e8',
+                                        padding: 20,
+                                        font: { family: 'Inter', size: 12 }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            let label = context.label || '';
+                                            if (label) { label += ': '; }
+                                            if (context.parsed !== null) {
+                                                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
+                                            }
+                                            return label;
                                         }
-                                        return label;
                                     }
                                 }
-                            }
-                        },
-                        cutout: '70%'
-                    }
-                });
-            })
-            .catch(error => console.error("Grafik verisi alınırken hata:", error));
-    });
-</script>
+                            },
+                            cutout: '70%'
+                        }
+                    });
+                })
+                .catch(error => console.error("Grafik verisi alınırken hata:", error));
+        });
+    </script>
 
 </body>
+
 </html>
