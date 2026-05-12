@@ -245,16 +245,19 @@
     });
 
     function openUpdatePortfolioModal(btn) {
-        document.getElementById('updateQuantity').value = btn.dataset.quantity;
-        document.getElementById('updateCostPerUnit').value = btn.dataset.cost;
+        const qty = parseFloat(parseFloat(btn.dataset.quantity).toFixed(3));
+        const cost = parseFloat(parseFloat(btn.dataset.cost).toFixed(3));
+        document.getElementById('updateQuantity').value = qty;
+        document.getElementById('updateCostPerUnit').value = cost;
         document.getElementById('updatePortfolioForm').action = '/portfolio/update/' + btn.dataset.id;
         new bootstrap.Modal(document.getElementById('updatePortfolioModal')).show();
     }
 
     function openSellModal(btn) {
+        const maxQty = parseFloat(parseFloat(btn.dataset.quantity).toFixed(3));
         document.getElementById('sellCoinName').textContent = btn.dataset.coinname;
         document.getElementById('sellCoinSymbol').textContent = '(' + btn.dataset.symbol + ')';
-        document.getElementById('sellMaxQty').textContent = btn.dataset.quantity;
+        document.getElementById('sellMaxQty').textContent = maxQty;
         document.getElementById('sellQuantity').max = btn.dataset.quantity;
         document.getElementById('sellQuantity').value = '';
         document.getElementById('sellPrice').value = '';

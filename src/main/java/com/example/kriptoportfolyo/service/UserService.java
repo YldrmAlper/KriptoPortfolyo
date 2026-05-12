@@ -57,6 +57,16 @@ public class UserService {
     }
 
     /**
+     * Kullanıcı adının sistemde zaten kayıtlı olup olmadığını kontrol eder.
+     *
+     * @param username kontrol edilecek kullanıcı adı
+     * @return true ise kullanıcı adı zaten mevcut
+     */
+    public boolean isUsernameTaken(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    /**
      * Kullanıcı adına göre kullanıcıyı bulur.
      *
      * @param username aranacak kullanıcı adı

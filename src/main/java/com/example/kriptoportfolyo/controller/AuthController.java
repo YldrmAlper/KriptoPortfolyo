@@ -82,6 +82,12 @@ public class AuthController {
                                BindingResult result,
                                Model model,
                                RedirectAttributes redirectAttributes) {
+        // Her zaman ilk önce kullanıcı adı alınmış mı kontrol et
+        if (dto.getUsername() != null && !dto.getUsername().isBlank()
+                && userService.isUsernameTaken(dto.getUsername())) {
+            result.rejectValue("username", "error.username", "Bu kullanıcı adı zaten kullanılıyor");
+        }
+
         if (result.hasErrors()) {
             return "auth/register";
         }

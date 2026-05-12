@@ -2,6 +2,7 @@ package com.example.kriptoportfolyo.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,8 @@ public class UserRegisterDto {
 
     @NotBlank(message = "E-posta adresi boş olamaz")
     @Email(message = "Geçerli bir e-posta adresi giriniz")
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+             message = "Geçerli bir e-posta adresi giriniz (örn: kullanici@mail.com)")
     private String email;
 
     @NotBlank(message = "Şifre boş olamaz")
