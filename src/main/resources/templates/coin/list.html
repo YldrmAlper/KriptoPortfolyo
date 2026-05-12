@@ -36,13 +36,12 @@
                     <tr>
                         <th class="ps-4">Coin</th>
                         <th>Sembol</th>
-                        <th>CoinGecko ID</th>
                         <th class="text-end pe-4">İşlemler</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:if="${#lists.isEmpty(coins)}">
-                        <td colspan="4" class="text-center py-5 text-secondary">
+                        <td colspan="3" class="text-center py-5 text-secondary">
                             <i class="bi bi-coin fs-1 mb-2 d-block"></i>
                             <p>Henüz coin eklenmemiş.</p>
                         </td>
@@ -56,10 +55,9 @@
                             </div>
                         </td>
                         <td class="align-middle" th:text="${c.symbol}">BTC</td>
-                        <td class="align-middle" th:text="${c.coingeckoId}">bitcoin</td>
                         <td class="text-end pe-4 align-middle">
                             <button type="button" class="btn btn-sm btn-outline-info border-0 me-2" title="Güncelle"
-                                    th:data-id="${c.id}" th:data-name="${c.name}" th:data-symbol="${c.symbol}" th:data-geckoId="${c.coingeckoId}"
+                                    th:data-id="${c.id}" th:data-name="${c.name}" th:data-symbol="${c.symbol}"
                                     onclick="openUpdateCoinModal(this)">
                                 <i class="bi bi-pencil"></i> Güncelle
                             </button>
@@ -103,10 +101,6 @@
                         <input type="text" name="symbol" id="updateCoinSymbol" class="form-control form-control-dark" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">CoinGecko ID</label>
-                        <input type="text" name="coingeckoId" id="updateCoinGeckoId" class="form-control form-control-dark">
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">Yeni Logo (Opsiyonel)</label>
                         <input type="file" name="logoFile" class="form-control form-control-dark" accept="image/*">
                     </div>
@@ -124,7 +118,6 @@
     function openUpdateCoinModal(btn) {
         document.getElementById('updateCoinName').value = btn.dataset.name;
         document.getElementById('updateCoinSymbol').value = btn.dataset.symbol;
-        document.getElementById('updateCoinGeckoId').value = btn.dataset.geckoid || '';
         document.getElementById('updateCoinForm').action = '/coins/update/' + btn.dataset.id;
         new bootstrap.Modal(document.getElementById('updateCoinModal')).show();
     }

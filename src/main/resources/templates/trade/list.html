@@ -22,8 +22,8 @@
             <div class="col-md-4 col-6">
                 <div class="stat-card">
                     <div class="stat-value"
-                         th:classappend="${totalRealizedPnl >= 0 ? 'pnl-positive' : 'pnl-negative'}"
-                         th:text="(${totalRealizedPnl >= 0 ? '+' : ''}) + '$' + ${#numbers.formatDecimal(totalRealizedPnl, 1, 'COMMA', 2, 'POINT')}">
+                         th:classappend="${totalRealizedPnl.compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? 'pnl-positive' : 'pnl-negative'}"
+                         th:text="${(totalRealizedPnl.compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? '+' : '') + '$' + #numbers.formatDecimal(totalRealizedPnl, 1, 'COMMA', 2, 'POINT')}">
                         $0.00
                     </div>
                     <div class="stat-label">Toplam Gerçekleşmiş Kar/Zarar</div>
@@ -37,13 +37,6 @@
             </div>
         </div>
 
-        <!-- Kar/Zarar Değişim Grafiği -->
-        <div class="dashboard-card mb-4">
-            <h5 class="text-white mb-3 border-bottom border-secondary pb-2">Kümülatif Kar/Zarar Grafiği</h5>
-            <div style="height: 300px; position: relative;">
-                <canvas id="pnlChart"></canvas>
-            </div>
-        </div>
 
         <!-- İşlem Tablosu -->
         <div class="dashboard-card p-0 overflow-hidden">
@@ -82,10 +75,12 @@
                         <td class="text-end" th:text="'$' + ${#numbers.formatDecimal(t.pricePerUnit, 1, 'COMMA', 2, 'POINT')}">$50,000</td>
                         <td class="text-end fw-bold text-info" th:text="'$' + ${#numbers.formatDecimal(t.totalValue, 1, 'COMMA', 2, 'POINT')}">$25,000</td>
                         <td class="text-end pe-4"
-                            th:classappend="${t.realizedPnl != null and t.realizedPnl >= 0 ? 'pnl-positive' : 'pnl-negative'}"
-                            th:text="${t.realizedPnl != null ? (t.realizedPnl >= 0 ? '+' : '') + '$' + #numbers.formatDecimal(t.realizedPnl, 1, 'COMMA', 2, 'POINT') : '—'}">
+                            th:if="${t.realizedPnl != null}"
+                            th:classappend="${t.realizedPnl.compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? 'pnl-positive' : 'pnl-negative'}"
+                            th:text="${(t.realizedPnl.compareTo(T(java.math.BigDecimal).ZERO) >= 0 ? '+' : '') + '$' + #numbers.formatDecimal(t.realizedPnl, 1, 'COMMA', 2, 'POINT')}">
                             $0.00
                         </td>
+                        <td class="text-end pe-4 text-secondary" th:if="${t.realizedPnl == null}">—</td>
                     </tr>
                     </tbody>
                 </table>
@@ -98,81 +93,7 @@
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/footer :: scripts}"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script th:inline="javascript">
-    document.addEventListener("DOMContentLoaded", function () {
-        /*<![CDATA[*/
-        var trades = /*[[${trades}]]*/ [];
-        /*]]>*/
 
-        // Satış işlemlerini tarihe göre sıralayıp kümülatif PnL hesapla
-        var sellTrades = trades.filter(function(t) { return t.type === 'SELL'; }).reverse();
-        var labels = [];
-        var cumulativeData = [];
-        var cumulative = 0;
-
-        sellTrades.forEach(function(t) {
-            var dateStr = t.createdAt ? new Date(t.createdAt).toLocaleDateString('tr-TR') : '—';
-            labels.push(dateStr + ' ' + t.coinSymbol);
-            cumulative += (t.realizedPnl || 0);
-            cumulativeData.push(cumulative);
-        });
-
-        if (labels.length === 0) {
-            labels.push('Henüz veri yok');
-            cumulativeData.push(0);
-        }
-
-        var ctx = document.getElementById('pnlChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Kümülatif Kar/Zarar ($)',
-                    data: cumulativeData,
-                    borderColor: cumulative >= 0 ? '#00b894' : '#e74c3c',
-                    backgroundColor: cumulative >= 0 ? 'rgba(0, 184, 148, 0.1)' : 'rgba(231, 76, 60, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: { color: '#e8e8e8', font: { family: 'Inter' } }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                return 'PnL: $' + ctx.parsed.y.toFixed(2);
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: { color: '#8b8b9e', font: { size: 10 } },
-                        grid: { color: 'rgba(255,255,255,0.05)' }
-                    },
-                    y: {
-                        ticks: {
-                            color: '#8b8b9e',
-                            callback: function(value) { return '$' + value; }
-                        },
-                        grid: { color: 'rgba(255,255,255,0.05)' }
-                    }
-                }
-            }
-        });
-    });
-</script>
 
 </body>
 </html>

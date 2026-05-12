@@ -17,11 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 public class DashboardSummaryDto {
     
-    private BigDecimal totalPortfolioValue; // Anlık fiyatlara göre toplam değer
     private BigDecimal totalInvestedCost; // Toplam yatırılan maliyet
-    private BigDecimal totalProfitLoss; // Toplam Kar/Zarar ($)
-    private BigDecimal totalProfitLossPercentage; // Toplam Kar/Zarar (%)
-    
+    private BigDecimal totalRealizedPnl; // Toplam Gerçekleşmiş Kar/Zarar ($) (Trade kayıtlarından)
     private int totalAssetsCount;
     private int activeExchangesCount;
 

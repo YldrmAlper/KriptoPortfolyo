@@ -32,7 +32,7 @@ public class ChartController {
     }
 
     /**
-     * Portföy dağılım verilerini (Coin Adı ve Değeri) döner.
+     * Portföy dağılım verilerini (Coin Adı ve Toplam Maliyet) döner.
      * Doughnut (Pasta) grafiği için kullanılır.
      */
     @GetMapping("/distribution")
@@ -45,7 +45,7 @@ public class ChartController {
                 .toList();
 
         List<Double> data = summary.getDetailedItems().stream()
-                .map(item -> item.getCurrentValue().doubleValue())
+                .map(item -> item.getTotalCost().doubleValue())
                 .toList();
 
         Map<String, Object> result = new HashMap<>();

@@ -3,29 +3,32 @@ package com.example.kriptoportfolyo.service;
 import com.example.kriptoportfolyo.dto.DashboardSummaryDto;
 import com.example.kriptoportfolyo.dto.PortfolioItemViewDto;
 import com.example.kriptoportfolyo.entity.PortfolioItem;
+import com.example.kriptoportfolyo.entity.Trade;
 import com.example.kriptoportfolyo.repository.PortfolioItemRepository;
+import com.example.kriptoportfolyo.repository.TradeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Dashboard verilerini hesaplayan ve birleştiren ana servis.
+ * Net Kar/Zarar, Trade kayıtlarındaki realizedPnl toplamından dinamik olarak hesaplanır.
  */
 @Service
+@Transactional(readOnly = true)
 public class DashboardService {
 
     private final PortfolioItemRepository portfolioItemRepository;
-    private final PriceService priceService;
+    private final TradeRepository tradeRepository;
 
     public DashboardService(PortfolioItemRepository portfolioItemRepository,
-                            PriceService priceService) {
+                            TradeRepository tradeRepository) {
         this.portfolioItemRepository = portfolioItemRepository;
-        this.priceService = priceService;
+        this.tradeRepository = tradeRepository;
     }
 
     public DashboardSummaryDto getDashboardSummary(Long userId) {
@@ -33,86 +36,44 @@ public class DashboardService {
 
         // 1. Manuel eklenen varlıkları al ve ViewDTO'ya çevir
         List<PortfolioItem> manualItems = portfolioItemRepository.findByUserId(userId);
+        BigDecimal totalInvestedCost = BigDecimal.ZERO;
+
         for (PortfolioItem item : manualItems) {
             PortfolioItemViewDto viewDto = new PortfolioItemViewDto();
             viewDto.setId(item.getId());
+            viewDto.setCoinId(item.getCoin().getId());
             viewDto.setCoinName(item.getCoin().getName());
             viewDto.setCoinSymbol(item.getCoin().getSymbol());
             viewDto.setExchangeName(item.getExchange().getName());
             viewDto.setSource("MANUAL");
-            viewDto.setQuantity(item.getQuantity());
-            viewDto.setCostPerUnit(item.getCostPerUnit());
-            viewDto.setTotalCost(item.getTotalCost());
+            BigDecimal quantity = item.getQuantity() != null ? item.getQuantity() : BigDecimal.ZERO;
+            BigDecimal costPerUnit = item.getCostPerUnit() != null ? item.getCostPerUnit() : BigDecimal.ZERO;
+            BigDecimal totalCost = item.getTotalCost() != null ? item.getTotalCost() : BigDecimal.ZERO;
 
-            // CoinGecko ID'yi doğrudan Coin entity'sinden al
-            String geckoId = item.getCoin().getCoingeckoId();
-            viewDto.setCoingeckoId(geckoId != null ? geckoId : "");
+            viewDto.setQuantity(quantity);
+            viewDto.setCostPerUnit(costPerUnit);
+            viewDto.setTotalCost(totalCost);
 
+            totalInvestedCost = totalInvestedCost.add(totalCost);
             allItems.add(viewDto);
         }
 
-        // 2. Tüm benzersiz CoinGecko ID'lerini topla
-        List<String> coinIdsToFetch = allItems.stream()
-                .map(PortfolioItemViewDto::getCoingeckoId)
-                .filter(id -> id != null && !id.isEmpty())
-                .distinct()
-                .collect(Collectors.toList());
+        // 2. Trade kayıtlarından toplam gerçekleşmiş Kar/Zarar hesapla
+        BigDecimal totalRealizedPnl = tradeRepository.findByUserIdAndTypeOrderByCreatedAtDesc(userId, "SELL")
+                .stream()
+                .map(t -> t.getRealizedPnl() != null ? t.getRealizedPnl() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        Map<String, BigDecimal> currentPrices = priceService.getPrices(coinIdsToFetch);
-
-        // 3. Fiyatları eşleştir ve PnL (Kar/Zarar) hesapla
-        BigDecimal totalPortfolioValue = BigDecimal.ZERO;
-        BigDecimal totalInvestedCost = BigDecimal.ZERO;
-
-        for (PortfolioItemViewDto item : allItems) {
-            String geckoId = item.getCoingeckoId();
-            BigDecimal currentPrice = currentPrices.getOrDefault(geckoId, BigDecimal.ZERO);
-            
-            item.setCurrentPrice(currentPrice);
-            
-            if (currentPrice.compareTo(BigDecimal.ZERO) == 0) {
-                item.setCurrentValue(item.getTotalCost());
-                item.setProfitLoss(BigDecimal.ZERO);
-                item.setProfitLossPercentage(BigDecimal.ZERO);
-            } else {
-                BigDecimal currentValue = item.getQuantity().multiply(currentPrice);
-                item.setCurrentValue(currentValue);
-                
-                BigDecimal pnl = currentValue.subtract(item.getTotalCost());
-                item.setProfitLoss(pnl);
-                
-                if (item.getTotalCost().compareTo(BigDecimal.ZERO) > 0) {
-                    BigDecimal pnlPercentage = pnl.divide(item.getTotalCost(), 4, RoundingMode.HALF_UP)
-                                                  .multiply(new BigDecimal("100"));
-                    item.setProfitLossPercentage(pnlPercentage);
-                } else {
-                    item.setProfitLossPercentage(BigDecimal.ZERO);
-                }
-            }
-            
-            totalPortfolioValue = totalPortfolioValue.add(item.getCurrentValue());
-            totalInvestedCost = totalInvestedCost.add(item.getTotalCost());
-        }
-
-        // 4. Genel toplamları hesapla
+        // 3. Genel toplamları hesapla
         DashboardSummaryDto summary = new DashboardSummaryDto();
         summary.setDetailedItems(allItems);
-        summary.setTotalPortfolioValue(totalPortfolioValue);
         summary.setTotalInvestedCost(totalInvestedCost);
-        
-        BigDecimal totalPnl = totalPortfolioValue.subtract(totalInvestedCost);
-        summary.setTotalProfitLoss(totalPnl);
-        
-        if (totalInvestedCost.compareTo(BigDecimal.ZERO) > 0) {
-            BigDecimal totalPnlPercentage = totalPnl.divide(totalInvestedCost, 4, RoundingMode.HALF_UP)
-                                                    .multiply(new BigDecimal("100"));
-            summary.setTotalProfitLossPercentage(totalPnlPercentage);
-        } else {
-            summary.setTotalProfitLossPercentage(BigDecimal.ZERO);
-        }
+        summary.setTotalRealizedPnl(totalRealizedPnl);
+
+        // Yüzdelik hesaplama kaldırıldı
 
         summary.setTotalAssetsCount(allItems.size());
-        
+
         // Aktif (farklı) borsa sayısını hesapla
         long activeExchanges = allItems.stream()
                 .map(PortfolioItemViewDto::getExchangeName)

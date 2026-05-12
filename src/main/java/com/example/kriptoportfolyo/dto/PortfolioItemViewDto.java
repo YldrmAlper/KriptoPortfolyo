@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 /**
  * Dashboard üzerinde gösterilecek birleştirilmiş varlık DTO'su.
- * Hem veritabanındaki kayıtları hem de API'den gelen anlık fiyatları içerir.
+ * Veritabanındaki portföy kayıtlarını ve hesaplanmış değerleri içerir.
  */
 @Getter
 @Setter
@@ -18,22 +18,14 @@ import java.math.BigDecimal;
 public class PortfolioItemViewDto {
 
     private Long id;
+    private Long coinId;
     private String coinName;
     private String coinSymbol;
     private String exchangeName;
     private String source; // "MANUAL" veya "API"
-    private String coingeckoId; // CoinGecko API eşleştirme ID'si
 
     // Miktar ve Maliyet
     private BigDecimal quantity;
     private BigDecimal costPerUnit;
     private BigDecimal totalCost; // quantity * costPerUnit
-
-    // Anlık Veriler (CoinGecko'dan vb. gelir)
-    private BigDecimal currentPrice;
-    private BigDecimal currentValue; // quantity * currentPrice
-
-    // Kar / Zarar
-    private BigDecimal profitLoss; // currentValue - totalCost
-    private BigDecimal profitLossPercentage; // (profitLoss / totalCost) * 100
 }

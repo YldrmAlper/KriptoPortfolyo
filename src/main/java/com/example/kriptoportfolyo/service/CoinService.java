@@ -47,7 +47,6 @@ public class CoinService {
         Coin coin = new Coin();
         coin.setName(dto.getName());
         coin.setSymbol(dto.getSymbol().toUpperCase());
-        coin.setCoingeckoId(dto.getCoingeckoId());
         coin.setUser(user);
 
         if (dto.getLogoFile() != null && !dto.getLogoFile().isEmpty()) {
@@ -74,7 +73,6 @@ public class CoinService {
         Coin coin = getCoinEntity(id, userId);
         coin.setName(dto.getName());
         coin.setSymbol(dto.getSymbol().toUpperCase());
-        coin.setCoingeckoId(dto.getCoingeckoId());
         
         if (dto.getLogoFile() != null && !dto.getLogoFile().isEmpty()) {
             imageService.validateImage(dto.getLogoFile());
@@ -108,7 +106,6 @@ public class CoinService {
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setSymbol(entity.getSymbol());
-        dto.setCoingeckoId(entity.getCoingeckoId());
         dto.setLogoBase64(Base64Util.encodeToString(entity.getLogo()));
         dto.setLogoContentType(entity.getLogoContentType());
         return dto;

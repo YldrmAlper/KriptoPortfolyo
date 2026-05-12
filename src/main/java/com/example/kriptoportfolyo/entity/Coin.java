@@ -19,7 +19,6 @@ import lombok.Setter;
  * Coin (kripto para) entity sınıfı.
  * Kullanıcının manuel olarak eklediği kripto paraları temsil eder.
  * Coin logosu BLOB (byte[]) olarak veritabanında saklanır.
- * coingeckoId alanı CoinGecko API ile fiyat eşleştirmesi için kullanılır.
  */
 @Entity
 @Table(name = "coins")
@@ -38,9 +37,6 @@ public class Coin {
 
     @Column(nullable = false, length = 20)
     private String symbol;
-
-    @Column(name = "coingecko_id", length = 100)
-    private String coingeckoId;
 
     @Lob
     @Column(columnDefinition = "LONGBLOB")

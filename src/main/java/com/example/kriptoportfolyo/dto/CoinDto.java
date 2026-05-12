@@ -28,8 +28,6 @@ public class CoinDto {
     @Size(min = 2, max = 20, message = "Sembol 2-20 karakter arasında olmalıdır")
     private String symbol;
 
-    private String coingeckoId;
-
     // Frontend'den resim yüklemek için
     private MultipartFile logoFile;
 

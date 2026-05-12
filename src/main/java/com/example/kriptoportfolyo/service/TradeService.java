@@ -4,6 +4,7 @@ import com.example.kriptoportfolyo.dto.TradeDto;
 import com.example.kriptoportfolyo.entity.Trade;
 import com.example.kriptoportfolyo.repository.TradeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
  * İşlem (Trade) geçmişi servisi.
  */
 @Service
+@Transactional(readOnly = true)
 public class TradeService {
 
     private final TradeRepository tradeRepository;
