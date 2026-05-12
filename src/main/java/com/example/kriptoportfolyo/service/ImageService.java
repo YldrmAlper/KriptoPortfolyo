@@ -42,4 +42,16 @@ public class ImageService {
         }
         return null;
     }
+
+    /**
+     * Resim doğrulama yapar.
+     */
+    public void validateImage(MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                throw new RuntimeException("Sadece resim dosyaları yüklenebilir.");
+            }
+        }
+    }
 }

@@ -23,7 +23,7 @@
                 <p class="section-subtitle mb-0">Sisteme kaydettiğiniz kripto paraları yönetin.</p>
             </div>
             <div>
-                <button type="button" class="btn btn-info-gradient" data-bs-toggle="modal" data-bs-target="#addCoinModal">
+                <button type="button" class="btn btn-info-gradient text-white" data-bs-toggle="modal" data-bs-target="#addCoinModal">
                     <i class="bi bi-plus-lg me-1"></i> Yeni Coin Ekle
                 </button>
             </div>
@@ -58,6 +58,9 @@
                         <td class="align-middle" th:text="${c.symbol}">BTC</td>
                         <td class="align-middle" th:text="${c.coingeckoId}">bitcoin</td>
                         <td class="text-end pe-4 align-middle">
+                            <button type="button" class="btn btn-sm btn-outline-info border-0 me-2" title="Güncelle" data-bs-toggle="modal" th:data-bs-target="'#updateCoinModal' + ${c.id}">
+                                <i class="bi bi-pencil"></i> Güncelle
+                            </button>
                             <form th:action="@{/coins/delete/{id}(id=${c.id})}" method="post" class="d-inline">
                                 <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Sil" onclick="return confirm('Bu coini silmek istediğinize emin misiniz? (Portföyde kullanılıyorsa silinmeyecektir)');">
                                     <i class="bi bi-trash"></i> Sil
@@ -65,6 +68,42 @@
                             </form>
                         </td>
                     </tr>
+                    
+                    <!-- Update Modal -->
+                    <div class="modal fade" th:id="'updateCoinModal' + ${c.id}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content auth-card border-0" style="background: #1a1a2e;">
+                                <div class="modal-header border-bottom border-secondary">
+                                    <h5 class="modal-title text-white">Coin Güncelle</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form th:action="@{/coins/update/{id}(id=${c.id})}" method="post" enctype="multipart/form-data">
+                                    <div class="modal-body text-start">
+                                        <div class="mb-3">
+                                            <label class="form-label text-secondary small">Coin Adı</label>
+                                            <input type="text" name="name" class="form-control form-control-dark" th:value="${c.name}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-secondary small">Sembol</label>
+                                            <input type="text" name="symbol" class="form-control form-control-dark" th:value="${c.symbol}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-secondary small">CoinGecko ID</label>
+                                            <input type="text" name="coingeckoId" class="form-control form-control-dark" th:value="${c.coingeckoId}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-secondary small">Yeni Logo (Opsiyonel)</label>
+                                            <input type="file" name="logoFile" class="form-control form-control-dark" accept="image/*">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-top border-secondary">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                                        <button type="submit" class="btn btn-info-gradient text-white">Güncelle</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     </tbody>
                 </table>
             </div>

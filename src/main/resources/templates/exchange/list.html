@@ -53,6 +53,9 @@
                         </td>
                         <td class="fw-bold align-middle" th:text="${ex.name}">Binance</td>
                         <td class="text-end pe-4 align-middle">
+                            <button type="button" class="btn btn-sm btn-outline-info border-0 me-2" title="Güncelle" data-bs-toggle="modal" th:data-bs-target="'#updateExchangeModal' + ${ex.id}">
+                                <i class="bi bi-pencil"></i> Güncelle
+                            </button>
                             <form th:action="@{/exchanges/delete/{id}(id=${ex.id})}" method="post" class="d-inline">
                                 <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Sil" onclick="return confirm('Bu borsayı silmek istediğinize emin misiniz? (Portföyde kullanılıyorsa silinmeyecektir)');">
                                     <i class="bi bi-trash"></i> Sil
@@ -60,6 +63,34 @@
                             </form>
                         </td>
                     </tr>
+                    
+                    <!-- Update Modal -->
+                    <div class="modal fade" th:id="'updateExchangeModal' + ${ex.id}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content auth-card border-0" style="background: #1a1a2e;">
+                                <div class="modal-header border-bottom border-secondary">
+                                    <h5 class="modal-title text-white">Borsayı Güncelle</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form th:action="@{/exchanges/update/{id}(id=${ex.id})}" method="post" enctype="multipart/form-data">
+                                    <div class="modal-body text-start">
+                                        <div class="mb-3">
+                                            <label class="form-label text-secondary small">Borsa Adı</label>
+                                            <input type="text" name="name" class="form-control form-control-dark" th:value="${ex.name}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-secondary small">Yeni Logo (Opsiyonel)</label>
+                                            <input type="file" name="logoFile" class="form-control form-control-dark" accept="image/*">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-top border-secondary">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                                        <button type="submit" class="btn btn-warning-gradient">Güncelle</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     </tbody>
                 </table>
             </div>
