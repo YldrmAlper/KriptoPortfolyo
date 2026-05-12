@@ -4,12 +4,16 @@ import com.example.kriptoportfolyo.dto.PortfolioItemDto;
 import com.example.kriptoportfolyo.entity.Coin;
 import com.example.kriptoportfolyo.entity.Exchange;
 import com.example.kriptoportfolyo.entity.PortfolioItem;
+import com.example.kriptoportfolyo.entity.Trade;
 import com.example.kriptoportfolyo.entity.User;
 import com.example.kriptoportfolyo.repository.PortfolioItemRepository;
+import com.example.kriptoportfolyo.repository.TradeRepository;
 import com.example.kriptoportfolyo.util.Base64Util;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,13 +24,15 @@ import java.util.stream.Collectors;
 public class PortfolioService {
 
     private final PortfolioItemRepository portfolioItemRepository;
+    private final TradeRepository tradeRepository;
     private final UserService userService;
     private final ExchangeService exchangeService;
     private final CoinService coinService;
 
-    public PortfolioService(PortfolioItemRepository portfolioItemRepository, UserService userService,
-                            ExchangeService exchangeService, CoinService coinService) {
+    public PortfolioService(PortfolioItemRepository portfolioItemRepository, TradeRepository tradeRepository,
+                            UserService userService, ExchangeService exchangeService, CoinService coinService) {
         this.portfolioItemRepository = portfolioItemRepository;
+        this.tradeRepository = tradeRepository;
         this.userService = userService;
         this.exchangeService = exchangeService;
         this.coinService = coinService;
@@ -105,6 +111,55 @@ public class PortfolioService {
         PortfolioItem item = portfolioItemRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("Portföy varlığı bulunamadı"));
         portfolioItemRepository.delete(item);
+    }
+
+    /**
+     * Coin satış işlemi. Miktar düşürülür ve Trade kaydı oluşturulur.
+     *
+     * @param itemId       portföy varlık ID'si
+     * @param sellQuantity satılacak miktar
+     * @param sellPrice    birim satış fiyatı
+     * @param userId       kullanıcı ID'si
+     * @return başarı mesajı
+     */
+    @Transactional
+    public String sellPortfolioItem(Long itemId, BigDecimal sellQuantity, BigDecimal sellPrice, Long userId) {
+        PortfolioItem item = portfolioItemRepository.findByIdAndUserId(itemId, userId)
+                .orElseThrow(() -> new RuntimeException("Portföy varlığı bulunamadı"));
+
+        // Mevcut miktardan fazla satılamaz
+        if (sellQuantity.compareTo(item.getQuantity()) > 0) {
+            throw new RuntimeException("Satış miktarı mevcut miktardan fazla olamaz! (Mevcut: " + item.getQuantity() + ")");
+        }
+
+        // Trade kaydı oluştur
+        Trade trade = new Trade();
+        trade.setUser(item.getUser());
+        trade.setCoin(item.getCoin());
+        trade.setExchange(item.getExchange());
+        trade.setType("SELL");
+        trade.setQuantity(sellQuantity);
+        trade.setPricePerUnit(sellPrice);
+
+        // Gerçekleşmiş Kar/Zarar: (satışFiyat - maliyetFiyat) * satışMiktarı
+        BigDecimal realizedPnl = sellPrice.subtract(item.getCostPerUnit()).multiply(sellQuantity);
+        trade.setRealizedPnl(realizedPnl);
+
+        tradeRepository.save(trade);
+
+        // Portföy miktarını düşür
+        BigDecimal newQuantity = item.getQuantity().subtract(sellQuantity);
+        if (newQuantity.compareTo(BigDecimal.ZERO) <= 0) {
+            // Miktar sıfırlanırsa varlığı sil
+            portfolioItemRepository.delete(item);
+        } else {
+            item.setQuantity(newQuantity);
+            portfolioItemRepository.save(item);
+        }
+
+        String pnlText = realizedPnl.compareTo(BigDecimal.ZERO) >= 0 ? "+" : "";
+        return sellQuantity + " adet " + item.getCoin().getSymbol() + " satıldı. Gerçekleşen Kar/Zarar: "
+                + pnlText + "$" + realizedPnl.setScale(2, RoundingMode.HALF_UP);
     }
     
     /**

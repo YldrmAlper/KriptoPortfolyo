@@ -23,14 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
     /**
-     * E-posta adresine göre kullanıcıyı bulur.
-     *
-     * @param email aranacak e-posta adresi
-     * @return bulunan kullanıcı (Optional)
-     */
-    Optional<User> findByEmail(String email);
-
-    /**
      * Kullanıcı adının sistemde kayıtlı olup olmadığını kontrol eder.
      *
      * @param username kontrol edilecek kullanıcı adı

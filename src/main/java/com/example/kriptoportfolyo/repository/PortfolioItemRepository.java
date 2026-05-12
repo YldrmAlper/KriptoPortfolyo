@@ -40,16 +40,6 @@ public interface PortfolioItemRepository extends JpaRepository<PortfolioItem, Lo
     Optional<PortfolioItem> findByUserIdAndExchangeIdAndCoinId(Long userId, Long exchangeId, Long coinId);
 
     /**
-     * Belirli bir kullanıcının varlıklarını kaynağa göre filtreler.
-     * source: "MANUAL" (elle eklenen) veya "API" (borsadan çekilen)
-     *
-     * @param userId kullanıcı ID'si
-     * @param source varlık kaynağı
-     * @return filtrelenmiş portföy varlıkları
-     */
-    List<PortfolioItem> findByUserIdAndSource(Long userId, String source);
-
-    /**
      * Kullanıcının portföyünde coin adı, sembolü veya borsa adına göre arama yapar.
      * Dinamik arama özelliği için JOIN sorgusu kullanır.
      *
