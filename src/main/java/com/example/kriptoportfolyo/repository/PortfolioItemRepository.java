@@ -35,6 +35,11 @@ public interface PortfolioItemRepository extends JpaRepository<PortfolioItem, Lo
     Optional<PortfolioItem> findByIdAndUserId(Long id, Long userId);
 
     /**
+     * Belirli bir kullanıcının belirli bir borsa ve coin'e ait varlığını bulur (Stackleme için).
+     */
+    Optional<PortfolioItem> findByUserIdAndExchangeIdAndCoinId(Long userId, Long exchangeId, Long coinId);
+
+    /**
      * Belirli bir kullanıcının varlıklarını kaynağa göre filtreler.
      * source: "MANUAL" (elle eklenen) veya "API" (borsadan çekilen)
      *

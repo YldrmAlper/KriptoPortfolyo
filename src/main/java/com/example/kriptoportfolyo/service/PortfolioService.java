@@ -42,7 +42,7 @@ public class PortfolioService {
     }
 
     /**
-     * Yeni bir varlık ekler.
+     * Yeni bir varlık ekler. Zaten varsa miktarını artırıp ortalama maliyeti günceller.
      */
     @Transactional
     public void addPortfolioItem(PortfolioItemDto dto, Long userId) {
@@ -50,15 +50,36 @@ public class PortfolioService {
         Exchange exchange = exchangeService.getExchangeEntity(dto.getExchangeId(), userId);
         Coin coin = coinService.getCoinEntity(dto.getCoinId(), userId);
 
-        PortfolioItem item = new PortfolioItem();
-        item.setUser(user);
-        item.setExchange(exchange);
-        item.setCoin(coin);
-        item.setQuantity(dto.getQuantity());
-        item.setCostPerUnit(dto.getCostPerUnit());
-        item.setSource("MANUAL");
+        portfolioItemRepository.findByUserIdAndExchangeIdAndCoinId(userId, exchange.getId(), coin.getId())
+                .ifPresentOrElse(existingItem -> {
+                    // Aynı varlık varsa birleştir ve ortalama maliyet hesapla
+                    java.math.BigDecimal oldQuantity = existingItem.getQuantity();
+                    java.math.BigDecimal oldTotalCost = oldQuantity.multiply(existingItem.getCostPerUnit());
+                    
+                    java.math.BigDecimal addedQuantity = dto.getQuantity();
+                    java.math.BigDecimal addedTotalCost = addedQuantity.multiply(dto.getCostPerUnit());
+                    
+                    java.math.BigDecimal newQuantity = oldQuantity.add(addedQuantity);
+                    java.math.BigDecimal newTotalCost = oldTotalCost.add(addedTotalCost);
+                    
+                    java.math.BigDecimal newAvgCost = newTotalCost.divide(newQuantity, 8, java.math.RoundingMode.HALF_UP);
+                    
+                    existingItem.setQuantity(newQuantity);
+                    existingItem.setCostPerUnit(newAvgCost);
+                    
+                    portfolioItemRepository.save(existingItem);
+                }, () -> {
+                    // Yoksa yeni oluştur
+                    PortfolioItem item = new PortfolioItem();
+                    item.setUser(user);
+                    item.setExchange(exchange);
+                    item.setCoin(coin);
+                    item.setQuantity(dto.getQuantity());
+                    item.setCostPerUnit(dto.getCostPerUnit());
+                    item.setSource("MANUAL");
 
-        portfolioItemRepository.save(item);
+                    portfolioItemRepository.save(item);
+                });
     }
 
     /**

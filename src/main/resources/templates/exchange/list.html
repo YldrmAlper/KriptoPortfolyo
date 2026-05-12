@@ -54,7 +54,8 @@
                         <td class="fw-bold align-middle" th:text="${ex.name}">Binance</td>
                         <td class="text-end pe-4 align-middle">
                             <button type="button" class="btn btn-sm btn-outline-info border-0 me-2" title="Güncelle"
-                                    th:onclick="'openUpdateExchangeModal(' + ${ex.id} + ', \'' + ${ex.name} + '\')'">
+                                    th:data-id="${ex.id}" th:data-name="${ex.name}"
+                                    onclick="openUpdateExchangeModal(this)">
                                 <i class="bi bi-pencil"></i> Güncelle
                             </button>
                             <form th:action="@{/exchanges/delete/{id}(id=${ex.id})}" method="post" class="d-inline">
@@ -86,7 +87,7 @@
                 <h5 class="modal-title"><i class="bi bi-pencil-square me-2 text-warning"></i>Borsayı Güncelle</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="updateExchangeForm" method="post" enctype="multipart/form-data">
+            <form id="updateExchangeForm" method="post" enctype="multipart/form-data" th:action="@{/}">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Borsa Adı</label>
@@ -107,9 +108,9 @@
 </div>
 
 <script>
-    function openUpdateExchangeModal(id, name) {
-        document.getElementById('updateExchangeName').value = name;
-        document.getElementById('updateExchangeForm').action = '/exchanges/update/' + id;
+    function openUpdateExchangeModal(btn) {
+        document.getElementById('updateExchangeName').value = btn.dataset.name;
+        document.getElementById('updateExchangeForm').action = '/exchanges/update/' + btn.dataset.id;
         new bootstrap.Modal(document.getElementById('updateExchangeModal')).show();
     }
 </script>
