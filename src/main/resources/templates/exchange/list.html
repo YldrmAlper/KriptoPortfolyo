@@ -46,7 +46,8 @@
                             <p>Henüz borsa eklenmemiş.</p>
                         </td>
                     </tr>
-                    <tr th:each="ex : ${exchanges}">
+                    <th:block th:each="ex : ${exchanges}">
+                    <tr>
                         <td class="ps-4">
                             <img th:if="${ex.logoBase64 != null}" th:src="'data:' + ${ex.logoContentType} + ';base64,' + ${ex.logoBase64}" class="coin-logo-sm" alt="logo">
                             <img th:unless="${ex.logoBase64 != null}" th:src="@{/images/exchange/{id}(id=${ex.id})}" class="coin-logo-sm" alt="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2830/2830284.png'">
@@ -91,6 +92,7 @@
                             </div>
                         </div>
                     </div>
+                    </th:block>
                     </tbody>
                 </table>
             </div>

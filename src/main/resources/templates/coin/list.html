@@ -47,7 +47,8 @@
                             <p>Henüz coin eklenmemiş.</p>
                         </td>
                     </tr>
-                    <tr th:each="c : ${coins}">
+                    <th:block th:each="c : ${coins}">
+                    <tr>
                         <td class="ps-4">
                             <div class="d-flex align-items-center">
                                 <img th:if="${c.logoBase64 != null}" th:src="'data:' + ${c.logoContentType} + ';base64,' + ${c.logoBase64}" class="coin-logo me-3" alt="logo">
@@ -104,6 +105,7 @@
                             </div>
                         </div>
                     </div>
+                    </th:block>
                     </tbody>
                 </table>
             </div>
