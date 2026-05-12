@@ -46,8 +46,7 @@
                             <p>Henüz borsa eklenmemiş.</p>
                         </td>
                     </tr>
-                    <th:block th:each="ex : ${exchanges}">
-                    <tr>
+                    <tr th:each="ex : ${exchanges}">
                         <td class="ps-4">
                             <img th:if="${ex.logoBase64 != null}" th:src="'data:' + ${ex.logoContentType} + ';base64,' + ${ex.logoBase64}" class="coin-logo-sm" alt="logo">
                             <img th:unless="${ex.logoBase64 != null}" th:src="@{/images/exchange/{id}(id=${ex.id})}" class="coin-logo-sm" alt="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2830/2830284.png'">
@@ -62,37 +61,36 @@
                                     <i class="bi bi-trash"></i> Sil
                                 </button>
                             </form>
+
+                            <!-- Update Modal -->
+                            <div class="modal fade" th:id="'updateExchangeModal' + ${ex.id}" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content auth-card border-0" style="background: #1a1a2e; text-align: left;">
+                                        <div class="modal-header border-bottom border-secondary">
+                                            <h5 class="modal-title text-white">Borsayı Güncelle</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form th:action="@{/exchanges/update/{id}(id=${ex.id})}" method="post" enctype="multipart/form-data">
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label class="form-label text-secondary small">Borsa Adı</label>
+                                                    <input type="text" name="name" class="form-control form-control-dark" th:value="${ex.name}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label text-secondary small">Yeni Logo (Opsiyonel)</label>
+                                                    <input type="file" name="logoFile" class="form-control form-control-dark" accept="image/*">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-top border-secondary">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                                                <button type="submit" class="btn btn-warning-gradient">Güncelle</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
-                    
-                    <!-- Update Modal -->
-                    <div class="modal fade" th:id="'updateExchangeModal' + ${ex.id}" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content auth-card border-0" style="background: #1a1a2e;">
-                                <div class="modal-header border-bottom border-secondary">
-                                    <h5 class="modal-title text-white">Borsayı Güncelle</h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                </div>
-                                <form th:action="@{/exchanges/update/{id}(id=${ex.id})}" method="post" enctype="multipart/form-data">
-                                    <div class="modal-body text-start">
-                                        <div class="mb-3">
-                                            <label class="form-label text-secondary small">Borsa Adı</label>
-                                            <input type="text" name="name" class="form-control form-control-dark" th:value="${ex.name}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label text-secondary small">Yeni Logo (Opsiyonel)</label>
-                                            <input type="file" name="logoFile" class="form-control form-control-dark" accept="image/*">
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer border-top border-secondary">
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
-                                        <button type="submit" class="btn btn-warning-gradient">Güncelle</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    </th:block>
                     </tbody>
                 </table>
             </div>

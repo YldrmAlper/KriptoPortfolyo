@@ -122,7 +122,8 @@
                                     </tr>
 
                                     <tr th:each="item : ${summary.detailedItems}" style="cursor: pointer;"
-                                        th:onclick="'window.location.href=\'/chart/detail?symbol=' + ${item.coinSymbol} + '\''"
+                                        th:data-url="@{/chart/detail(symbol=${item.coinSymbol})}"
+                                        onclick="window.location.href=this.getAttribute('data-url')"
                                         class="hover-row">
                                         <!-- Varlık -->
                                         <td class="ps-4">

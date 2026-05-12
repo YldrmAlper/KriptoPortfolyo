@@ -42,6 +42,14 @@ public class DashboardController {
     }
 
     /**
+     * Genel grafik sayfasını açar.
+     */
+    @GetMapping("/charts")
+    public String charts(Model model) {
+        return "chart/index";
+    }
+
+    /**
      * TradingView detay grafiği sayfasını açar.
      */
     @GetMapping("/chart/detail")
