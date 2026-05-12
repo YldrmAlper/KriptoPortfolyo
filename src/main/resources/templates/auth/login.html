@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="tr">
+
+<head th:replace="~{fragments/header :: head('Giriş Yap — KriptoPortföy')}">
+</head>
+
+<body class="auth-body d-flex align-items-center justify-content-center min-vh-100">
+
+<!-- Animasyonlu Arka Plan Parçacıkları -->
+<div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+
+            <!-- Logo -->
+            <div class="text-center mb-4">
+                <i class="bi bi-currency-bitcoin display-1"
+                   style="color: #f7931a; filter: drop-shadow(0 0 20px rgba(247,147,26,0.4));"></i>
+                <h2 class="text-white fw-bold mt-2">
+                    Kripto<span style="color: #00d2ff;">Portföy</span>
+                </h2>
+                <p class="text-secondary">Portföyünüzü yönetmek için giriş yapın</p>
+            </div>
+
+            <!-- Giriş Kartı -->
+            <div class="card auth-card border-0 shadow-lg">
+                <div class="card-body p-4">
+
+                    <!-- Başarı Mesajı (Kayıt sonrası) -->
+                    <div th:if="${param.logout}" class="alert alert-info alert-dismissible fade show"
+                         role="alert">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Başarıyla çıkış yaptınız.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show"
+                         role="alert">
+                        <i class="bi bi-check-circle-fill me-1"></i>
+                        <span th:text="${successMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <!-- Hata Mesajı -->
+                    <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show"
+                         role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        Kullanıcı adı veya şifre hatalı!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <h5 class="card-title text-center text-white mb-4">
+                        <i class="bi bi-shield-lock me-1"></i> Giriş Yap
+                    </h5>
+
+                    <!-- Login Formu -->
+                    <form th:action="@{/login}" method="post">
+
+                        <!-- Kullanıcı Adı -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label text-light">
+                                <i class="bi bi-person me-1"></i> Kullanıcı Adı
+                            </label>
+                            <input type="text" id="username" name="username"
+                                   class="form-control form-control-dark"
+                                   placeholder="Kullanıcı adınızı girin"
+                                   required autofocus>
+                        </div>
+
+                        <!-- Şifre -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label text-light">
+                                <i class="bi bi-lock me-1"></i> Şifre
+                            </label>
+                            <input type="password" id="password" name="password"
+                                   class="form-control form-control-dark"
+                                   placeholder="Şifrenizi girin"
+                                   required>
+                        </div>
+
+                        <!-- Giriş Butonu -->
+                        <button type="submit" class="btn btn-primary-gradient w-100 py-2 fw-semibold">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Giriş Yap
+                        </button>
+                    </form>
+
+                    <!-- Kayıt Linki -->
+                    <div class="text-center mt-3">
+                        <span class="text-secondary">Hesabınız yok mu?</span>
+                        <a th:href="@{/register}" class="text-info text-decoration-none fw-medium">
+                            Kayıt Ol
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

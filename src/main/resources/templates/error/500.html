@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="tr">
+
+<head th:replace="~{fragments/header :: head('Sunucu Hatası — KriptoPortföy')}">
+</head>
+
+<body class="auth-body d-flex align-items-center justify-content-center min-vh-100 text-center">
+
+<!-- Arka Plan Animasyonu -->
+<div class="particles">
+    <div class="particle" style="background: rgba(231, 76, 60, 0.4);"></div>
+    <div class="particle" style="background: rgba(231, 76, 60, 0.4);"></div>
+</div>
+
+<div class="container position-relative z-1">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="display-1 fw-bold text-danger" style="font-size: 8rem; text-shadow: 0 0 30px rgba(231, 76, 60, 0.4);">500</h1>
+            <h3 class="text-white mb-3">Sistemde Bir Hata Oluştu!</h3>
+            <p class="text-secondary mb-4">Üzgünüz, sunucu tarafında beklenmeyen bir hata meydana geldi. Ekibimiz bu durumla ilgilenecektir.</p>
+            
+            <div th:if="${message}" class="alert alert-dark border-danger text-start p-3 mb-5" style="background: rgba(0,0,0,0.5);">
+                <code class="text-danger" th:text="${message}">Hata detayı burada görünecek.</code>
+            </div>
+            
+            <a th:href="@{/dashboard}" class="btn btn-danger-gradient px-4 py-2">
+                <i class="bi bi-arrow-counterclockwise me-2"></i>Ana Sayfaya Dön ve Tekrar Dene
+            </a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: scripts}"></div>
+
+</body>
+</html>

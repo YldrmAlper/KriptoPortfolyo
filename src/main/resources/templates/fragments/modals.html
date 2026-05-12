@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ============================================== -->
+<!-- PORTFÖY EKLEME MODAL                            -->
+<!-- ============================================== -->
+<div th:fragment="addPortfolioModal" class="modal fade" id="addPortfolioModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2 text-accent"></i>Portföye Varlık Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/portfolio/add}" method="post" th:object="${portfolioItemDto}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Borsa Seçin</label>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-control-dark" th:field="*{exchangeId}">
+                                <option value="" selected>-- Borsa Seçin --</option>
+                                <option th:each="ex : ${exchanges}" th:value="${ex.id}" th:text="${ex.name}"></option>
+                            </select>
+                        </div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('exchangeId')}" th:errors="*{exchangeId}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Coin Seçin</label>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-control-dark" th:field="*{coinId}">
+                                <option value="" selected>-- Coin Seçin --</option>
+                                <option th:each="c : ${coins}" th:value="${c.id}" th:text="${c.name + ' (' + c.symbol + ')'}"></option>
+                            </select>
+                        </div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('coinId')}" th:errors="*{coinId}"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Adet</label>
+                            <input type="number" step="0.00000001" class="form-control form-control-dark" th:field="*{quantity}" placeholder="0.00">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Birim Maliyet ($)</label>
+                            <input type="number" step="0.00000001" class="form-control form-control-dark" th:field="*{costPerUnit}" placeholder="0.00">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('costPerUnit')}" th:errors="*{costPerUnit}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-success-gradient">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================== -->
+<!-- BORSA EKLEME MODAL (Multipart)                  -->
+<!-- ============================================== -->
+<div th:fragment="addExchangeModal" class="modal fade" id="addExchangeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-bank me-2 text-warning"></i>Yeni Borsa Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/portfolio/exchange/add}" method="post" enctype="multipart/form-data" th:object="${exchangeDto}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Borsa Adı</label>
+                        <input type="text" class="form-control form-control-dark" th:field="*{name}" placeholder="Binance, MEXC vb.">
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Borsa Logosu</label>
+                        <input type="file" class="form-control form-control-dark" th:field="*{logoFile}" accept="image/*">
+                        <small class="text-secondary">Sadece resim dosyaları</small>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-target="#addPortfolioModal" data-bs-toggle="modal">Geri Dön</button>
+                    <button type="submit" class="btn btn-primary-gradient">Borsa Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================== -->
+<!-- COIN EKLEME MODAL (Multipart)                   -->
+<!-- ============================================== -->
+<div th:fragment="addCoinModal" class="modal fade" id="addCoinModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-coin me-2 text-info"></i>Yeni Coin Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/portfolio/coin/add}" method="post" enctype="multipart/form-data" th:object="${coinDto}">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Coin Adı</label>
+                            <input type="text" class="form-control form-control-dark" th:field="*{name}" placeholder="Bitcoin, Ethereum vb.">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Sembol</label>
+                            <input type="text" class="form-control form-control-dark" th:field="*{symbol}" placeholder="BTC" style="text-transform: uppercase;">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('symbol')}" th:errors="*{symbol}"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">CoinGecko ID (Fiyat Çekimi İçin - Opsiyonel)</label>
+                        <input type="text" class="form-control form-control-dark" th:field="*{coingeckoId}" placeholder="bitcoin, ethereum">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Coin Logosu</label>
+                        <input type="file" class="form-control form-control-dark" th:field="*{logoFile}" accept="image/*">
+                        <small class="text-secondary">Sadece resim dosyaları</small>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-target="#addPortfolioModal" data-bs-toggle="modal">Geri Dön</button>
+                    <button type="submit" class="btn btn-primary-gradient">Coin Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

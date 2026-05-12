@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="tr">
+<head th:replace="~{fragments/header :: head('Coinlerim — KriptoPortföy')}"></head>
+<body>
+
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="page-content">
+    <div class="container">
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show mb-4">
+            <i class="bi bi-check-circle-fill me-2"></i><span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show mb-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="section-title mb-1">Coin Yönetimi</h3>
+                <p class="section-subtitle mb-0">Sisteme kaydettiğiniz kripto paraları yönetin.</p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-info-gradient" data-bs-toggle="modal" data-bs-target="#addCoinModal">
+                    <i class="bi bi-plus-lg me-1"></i> Yeni Coin Ekle
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-card p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-dark table-borderless portfolio-table mb-0 text-white" style="--bs-table-bg: transparent;">
+                    <thead style="background: rgba(0,0,0,0.3);">
+                    <tr>
+                        <th class="ps-4">Coin</th>
+                        <th>Sembol</th>
+                        <th>CoinGecko ID</th>
+                        <th class="text-end pe-4">İşlemler</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(coins)}">
+                        <td colspan="4" class="text-center py-5 text-secondary">
+                            <i class="bi bi-coin fs-1 mb-2 d-block"></i>
+                            <p>Henüz coin eklenmemiş.</p>
+                        </td>
+                    </tr>
+                    <tr th:each="c : ${coins}">
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <img th:if="${c.logoBase64 != null}" th:src="'data:' + ${c.logoContentType} + ';base64,' + ${c.logoBase64}" class="coin-logo me-3" alt="logo">
+                                <img th:unless="${c.logoBase64 != null}" th:src="@{/images/coin/{id}(id=${c.id})}" class="coin-logo me-3" alt="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1490/1490919.png'">
+                                <div class="fw-bold" th:text="${c.name}">Bitcoin</div>
+                            </div>
+                        </td>
+                        <td class="align-middle" th:text="${c.symbol}">BTC</td>
+                        <td class="align-middle" th:text="${c.coingeckoId}">bitcoin</td>
+                        <td class="text-end pe-4 align-middle">
+                            <form th:action="@{/coins/delete/{id}(id=${c.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Sil" onclick="return confirm('Bu coini silmek istediğinize emin misiniz? (Portföyde kullanılıyorsa silinmeyecektir)');">
+                                    <i class="bi bi-trash"></i> Sil
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+<div th:replace="~{fragments/modals :: addCoinModal}"></div>
+
+</body>
+</html>
