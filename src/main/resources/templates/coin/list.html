@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="tr">
 <head th:replace="~{fragments/header :: head('Coinlerim — KriptoPortföy')}"></head>
 <body>
@@ -79,10 +79,8 @@
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/footer :: scripts}"></div>
 
-<!-- Coin Ekleme Modal (fragment) -->
 <div th:replace="~{fragments/modals :: addCoinModal}"></div>
 
-<!-- Coin Güncelleme Modal (TEK modal, JS ile doldurulur) -->
 <div class="modal fade" id="updateCoinModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-dark">

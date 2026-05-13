@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.entity;
+﻿package com.example.kriptoportfolyo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,11 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Borsa entity sınıfı.
- * Kullanıcının manuel olarak eklediği borsaları temsil eder.
- * Borsa logosu BLOB (byte[]) olarak veritabanında saklanır.
- */
 @Entity
 @Table(name = "exchanges")
 @Getter

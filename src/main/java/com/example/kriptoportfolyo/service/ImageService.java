@@ -5,16 +5,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-/**
- * Resim işleme servisi.
- * MultipartFile nesnelerini işleyip byte dizisine dönüştürür.
- */
 @Service
 public class ImageService {
 
     /**
-     * Yüklenen dosyadan byte dizisini alır.
-     *
      * @param file yüklenen MultipartFile nesnesi
      * @return dosyanın byte dizisi veya boşsa null
      * @throws RuntimeException dosya okuma hatası durumunda
@@ -29,10 +23,8 @@ public class ImageService {
         }
         return null;
     }
-    
+
     /**
-     * Yüklenen dosyanın içerik tipini (MIME type) döndürür.
-     * 
      * @param file yüklenen MultipartFile nesnesi
      * @return içerik tipi (örn. "image/png") veya boşsa null
      */
@@ -43,9 +35,6 @@ public class ImageService {
         return null;
     }
 
-    /**
-     * Resim doğrulama yapar.
-     */
     public void validateImage(MultipartFile file) {
         if (file != null && !file.isEmpty()) {
             String contentType = file.getContentType();

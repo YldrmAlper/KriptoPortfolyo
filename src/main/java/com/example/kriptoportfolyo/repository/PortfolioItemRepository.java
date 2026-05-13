@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.repository;
+﻿package com.example.kriptoportfolyo.repository;
 
 import com.example.kriptoportfolyo.entity.PortfolioItem;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,10 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Portföy varlık veritabanı erişim katmanı.
- * Kullanıcıya özel CRUD, kaynak (source) filtreleme ve dinamik arama metotları içerir.
- */
 @Repository
 public interface PortfolioItemRepository extends JpaRepository<PortfolioItem, Long> {
 
@@ -34,9 +30,6 @@ public interface PortfolioItemRepository extends JpaRepository<PortfolioItem, Lo
      */
     Optional<PortfolioItem> findByIdAndUserId(Long id, Long userId);
 
-    /**
-     * Belirli bir kullanıcının belirli bir borsa ve coin'e ait varlığını bulur (Stackleme için).
-     */
     Optional<PortfolioItem> findByUserIdAndExchangeIdAndCoinId(Long userId, Long exchangeId, Long coinId);
 
     /**
@@ -56,7 +49,6 @@ public interface PortfolioItemRepository extends JpaRepository<PortfolioItem, Lo
            "OR LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%')))")
     List<PortfolioItem> searchByQuery(@Param("userId") Long userId, @Param("query") String query);
 
-    // Kısıtlama (Constraint) kontrolleri için
     boolean existsByExchangeIdAndUserId(Long exchangeId, Long userId);
     
     boolean existsByCoinIdAndUserId(Long coinId, Long userId);

@@ -12,11 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * Spring Security yapılandırma sınıfı.
- * BCrypt şifreleme, form tabanlı kimlik doğrulama,
- * URL bazlı yetkilendirme kuralları ve oturum yönetimi yapılandırır.
- */
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -27,18 +23,12 @@ public class SecurityConfig {
         this.customUserDetailsService = customUserDetailsService;
     }
 
-    /**
-     * Şifreleri BCrypt algoritmasıyla hash'lemek için kullanılan bean.
-     */
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Veritabanı tabanlı kimlik doğrulama sağlayıcısı.
-     * CustomUserDetailsService ile kullanıcıyı yükler, BCrypt ile şifreyi doğrular.
-     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(customUserDetailsService);
@@ -46,23 +36,12 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    /**
-     * Kimlik doğrulama yöneticisi bean'i.
-     */
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
-    /**
-     * HTTP güvenlik filtre zinciri yapılandırması.
-     * - Herkese açık URL'ler: /login, /register, /css/**, /js/**, /images/**
-     * - Diğer tüm URL'ler: Kimlik doğrulaması gerektirir
-     * - Giriş sayfası: /login
-     * - Başarılı giriş: /dashboard
-     * - Hatalı giriş: /login?error=true
-     * - Çıkış: /logout → /login?logout=true
-     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http

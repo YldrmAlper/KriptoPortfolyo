@@ -18,10 +18,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 
-/**
- * Portföy işlemlerini yöneten Controller sınıfı.
- * Portföy listeleme, ekleme, güncelleme, satış, borsa ve coin ekleme operasyonlarını barındırır.
- */
 @Controller
 @RequestMapping("/portfolio")
 public class PortfolioController {
@@ -39,9 +35,6 @@ public class PortfolioController {
         this.userService = userService;
     }
 
-    /**
-     * Portföy sayfasını gösterir. Gerekli tüm listeleri Model'e ekler.
-     */
     @GetMapping
     public String portfolioPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         Long userId = getUserId(userDetails);
@@ -50,7 +43,6 @@ public class PortfolioController {
         model.addAttribute("exchanges", exchangeService.getUserExchanges(userId));
         model.addAttribute("coins", coinService.getUserCoins(userId));
 
-        // Form DTO'larını hazırla
         if (!model.containsAttribute("portfolioItemDto")) {
             model.addAttribute("portfolioItemDto", new PortfolioItemDto());
         }
@@ -64,9 +56,6 @@ public class PortfolioController {
         return "portfolio/list";
     }
 
-    /**
-     * Portföye yeni varlık ekler.
-     */
     @PostMapping("/add")
     public String addPortfolioItem(@Valid @ModelAttribute("portfolioItemDto") PortfolioItemDto dto,
                                    BindingResult result,
@@ -89,9 +78,6 @@ public class PortfolioController {
         return "redirect:/portfolio";
     }
 
-    /**
-     * Portföy varlığını günceller (Miktar ve Birim Maliyet).
-     */
     @PostMapping("/update/{id}")
     public String updatePortfolioItem(@PathVariable Long id,
                                       @RequestParam BigDecimal quantity,
@@ -111,9 +97,6 @@ public class PortfolioController {
         return "redirect:/portfolio";
     }
 
-    /**
-     * Coin satış işlemi. Service katmanına delege eder.
-     */
     @PostMapping("/sell/{id}")
     public String sellPortfolioItem(@PathVariable Long id,
                                     @RequestParam BigDecimal sellQuantity,
@@ -130,9 +113,6 @@ public class PortfolioController {
         return "redirect:/portfolio";
     }
 
-    /**
-     * Yeni borsa ekler.
-     */
     @PostMapping("/exchange/add")
     public String addExchange(@Valid @ModelAttribute("exchangeDto") ExchangeDto dto,
                               BindingResult result,
@@ -155,9 +135,6 @@ public class PortfolioController {
         return "redirect:/portfolio";
     }
 
-    /**
-     * Yeni coin ekler.
-     */
     @PostMapping("/coin/add")
     public String addCoin(@Valid @ModelAttribute("coinDto") CoinDto dto,
                           BindingResult result,
@@ -180,9 +157,6 @@ public class PortfolioController {
         return "redirect:/portfolio";
     }
 
-    /**
-     * Varlık siler.
-     */
     @PostMapping("/delete/{id}")
     public String deletePortfolioItem(@PathVariable Long id,
                                       @AuthenticationPrincipal UserDetails userDetails,
@@ -197,9 +171,6 @@ public class PortfolioController {
         return "redirect:/portfolio";
     }
 
-    /**
-     * Yardımcı metot: Oturumdaki kullanıcı ID'sini getirir.
-     */
     private Long getUserId(UserDetails userDetails) {
         return userService.findByUsername(userDetails.getUsername()).getId();
     }

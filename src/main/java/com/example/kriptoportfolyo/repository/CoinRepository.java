@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.repository;
+﻿package com.example.kriptoportfolyo.repository;
 
 import com.example.kriptoportfolyo.entity.Coin;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,10 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Coin veritabanı erişim katmanı.
- * Kullanıcıya özel coin CRUD işlemleri içerir.
- */
 @Repository
 public interface CoinRepository extends JpaRepository<Coin, Long> {
 

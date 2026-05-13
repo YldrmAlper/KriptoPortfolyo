@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.dto;
+﻿package com.example.kriptoportfolyo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,10 +7,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-/**
- * Dashboard üzerinde gösterilecek birleştirilmiş varlık DTO'su.
- * Veritabanındaki portföy kayıtlarını ve hesaplanmış değerleri içerir.
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,10 +18,8 @@ public class PortfolioItemViewDto {
     private String coinName;
     private String coinSymbol;
     private String exchangeName;
-    private String source; // "MANUAL" veya "API"
-
-    // Miktar ve Maliyet
+    private String source;
     private BigDecimal quantity;
     private BigDecimal costPerUnit;
-    private BigDecimal totalCost; // quantity * costPerUnit
+    private BigDecimal totalCost;
 }

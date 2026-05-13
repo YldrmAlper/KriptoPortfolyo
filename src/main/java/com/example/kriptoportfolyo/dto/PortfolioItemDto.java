@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.dto;
+﻿package com.example.kriptoportfolyo.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -10,10 +10,6 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Portföy varlık DTO sınıfı.
- * Kullanıcının portföyüne varlık ekleme veya güncelleme işlemlerinde kullanılır.
- */
 @Getter
 @Setter
 @NoArgsConstructor

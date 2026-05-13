@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="tr">
 
 <head th:replace="~{fragments/header :: head('Portföyüm — KriptoPortföy')}">
@@ -6,13 +6,11 @@
 
 <body>
 
-<!-- Navbar -->
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
 <div class="page-content">
     <div class="container">
 
-        <!-- Başarı / Hata Mesajları -->
         <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show mb-4">
             <i class="bi bi-check-circle-fill me-2"></i><span th:text="${successMessage}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -34,7 +32,6 @@
             </div>
         </div>
 
-        <!-- Portföy Kartı -->
         <div class="dashboard-card p-0 overflow-hidden">
             <div class="p-3 border-bottom border-secondary" style="background: rgba(255,255,255,0.02);">
                 <div class="row">
@@ -60,7 +57,6 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <!-- Portföy Boşsa -->
                     <tr th:if="${#lists.isEmpty(portfolioItems)}">
                         <td colspan="6" class="text-center py-5 text-secondary">
                             <i class="bi bi-inbox fs-1 mb-2 d-block"></i>
@@ -68,9 +64,7 @@
                         </td>
                     </tr>
 
-                    <!-- Portföy Doluysa -->
                     <tr th:each="item : ${portfolioItems}">
-                        <!-- Coin Bilgisi -->
                         <td class="ps-4">
                             <div class="d-flex align-items-center">
                                 <img th:if="${item.coinLogoBase64 != null}"
@@ -87,7 +81,6 @@
                             </div>
                         </td>
                         
-                        <!-- Borsa Bilgisi -->
                         <td>
                             <div class="d-flex align-items-center">
                                 <img th:if="${item.exchangeLogoBase64 != null}"
@@ -101,16 +94,12 @@
                             </div>
                         </td>
                         
-                        <!-- Miktar -->
                         <td class="text-end fw-medium" th:text="${#numbers.formatDecimal(item.quantity, 1, 'COMMA', 4, 'POINT')}">0.5</td>
                         
-                        <!-- Maliyet -->
                         <td class="text-end" th:text="'$' + ${#numbers.formatDecimal(item.costPerUnit, 1, 'COMMA', 2, 'POINT')}">$50,000</td>
                         
-                        <!-- Toplam Maliyet -->
                         <td class="text-end fw-bold text-info" th:text="'$' + ${#numbers.formatDecimal(item.totalCost, 1, 'COMMA', 2, 'POINT')}">$25,000</td>
                         
-                        <!-- İşlemler -->
                         <td class="text-center pe-4">
                             <button type="button" class="btn btn-sm btn-outline-info border-0 me-1" title="Güncelle"
                                     th:data-id="${item.id}"
@@ -142,16 +131,13 @@
     </div>
 </div>
 
-<!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/footer :: scripts}"></div>
 
-<!-- Modalları Sayfaya Dahil Et -->
 <div th:replace="~{fragments/modals :: addPortfolioModal}"></div>
 <div th:replace="~{fragments/modals :: addExchangeModal}"></div>
 <div th:replace="~{fragments/modals :: addCoinModal}"></div>
 
-<!-- Portföy Güncelleme Modal -->
 <div class="modal fade" id="updatePortfolioModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-dark">
@@ -181,7 +167,6 @@
     </div>
 </div>
 
-<!-- Coin Satış Modal -->
 <div class="modal fade" id="sellModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-dark">
@@ -220,7 +205,6 @@
     </div>
 </div>
 
-<!-- Arama, Güncelleme ve Satış Scriptleri -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const searchInput = document.getElementById("searchInput");

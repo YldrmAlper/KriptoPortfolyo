@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.controller;
+﻿package com.example.kriptoportfolyo.controller;
 
 import com.example.kriptoportfolyo.dto.DashboardSummaryDto;
 import com.example.kriptoportfolyo.service.DashboardService;
@@ -10,10 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/**
- * Dashboard controller sınıfı.
- * Giriş sonrası ana sayfayı ve PnL verilerini gösterir.
- */
 @Controller
 public class DashboardController {
 
@@ -25,10 +21,7 @@ public class DashboardController {
         this.userService = userService;
     }
 
-    /**
-     * Ana dashboard sayfasını gösterir.
-     * DashboardService'den dönen özet verileri modele ekler.
-     */
+    
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         Long userId = userService.findByUsername(userDetails.getUsername()).getId();
@@ -41,17 +34,13 @@ public class DashboardController {
         return "dashboard/index";
     }
 
-    /**
-     * Genel grafik sayfasını açar.
-     */
+    
     @GetMapping("/charts")
     public String charts(Model model) {
         return "chart/index";
     }
 
-    /**
-     * TradingView detay grafiği sayfasını açar.
-     */
+    
     @GetMapping("/chart/detail")
     public String chartDetail(@RequestParam("symbol") String symbol, Model model) {
         model.addAttribute("symbol", symbol.toUpperCase());

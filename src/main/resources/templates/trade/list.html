@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="tr">
 <head th:replace="~{fragments/header :: head('İşlem Geçmişi — KriptoPortföy')}"></head>
 <body>
@@ -17,7 +17,6 @@
             </div>
         </div>
 
-        <!-- Özet Kartları -->
         <div class="row g-3 mb-4">
             <div class="col-md-4 col-6">
                 <div class="stat-card">
@@ -37,8 +36,6 @@
             </div>
         </div>
 
-
-        <!-- İşlem Tablosu -->
         <div class="dashboard-card p-0 overflow-hidden">
             <div class="table-responsive">
                 <table class="table table-dark table-borderless portfolio-table mb-0 text-white" style="--bs-table-bg: transparent;">
@@ -92,8 +89,6 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/footer :: scripts}"></div>
-
-
 
 </body>
 </html>

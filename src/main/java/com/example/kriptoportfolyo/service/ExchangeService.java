@@ -11,10 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Borsa iş mantığı servisi.
- * Borsaların eklenmesi, listelenmesi ve DTO dönüşümlerinden sorumludur.
- */
 @Service
 public class ExchangeService {
 
@@ -30,18 +26,12 @@ public class ExchangeService {
         this.portfolioItemRepository = portfolioItemRepository;
     }
 
-    /**
-     * Kullanıcıya ait tüm borsaları listeler.
-     */
     public List<ExchangeDto> getUserExchanges(Long userId) {
         return exchangeRepository.findByUserId(userId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Yeni bir borsa ekler. Resim varsa BLOB olarak kaydeder.
-     */
     @Transactional
     public void addExchange(ExchangeDto dto, Long userId) {
         User user = userService.findById(userId);
@@ -57,22 +47,16 @@ public class ExchangeService {
         exchangeRepository.save(exchange);
     }
 
-    /**
-     * ID ve Kullanıcı ID'ye göre borsayı getirir. (Güvenlik için User ID zorunlu)
-     */
     public Exchange getExchangeEntity(Long id, Long userId) {
         return exchangeRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("Borsa bulunamadı"));
     }
 
-    /**
-     * Borsayı günceller.
-     */
     @Transactional
     public void updateExchange(Long id, ExchangeDto dto, Long userId) {
         Exchange exchange = getExchangeEntity(id, userId);
         exchange.setName(dto.getName());
-        
+
         if (dto.getLogoFile() != null && !dto.getLogoFile().isEmpty()) {
             imageService.validateImage(dto.getLogoFile());
             try {
@@ -85,9 +69,6 @@ public class ExchangeService {
         exchangeRepository.save(exchange);
     }
 
-    /**
-     * Borsa siler. Başka tabloda kullanılıyorsa hata fırlatır.
-     */
     @Transactional
     public void deleteExchange(Long id, Long userId) {
         if (portfolioItemRepository.existsByExchangeIdAndUserId(id, userId)) {
@@ -97,9 +78,6 @@ public class ExchangeService {
         exchangeRepository.delete(exchange);
     }
 
-    /**
-     * Entity -> DTO dönüşümü yapar. Resimleri Base64'e çevirir.
-     */
     private ExchangeDto convertToDto(Exchange entity) {
         ExchangeDto dto = new ExchangeDto();
         dto.setId(entity.getId());

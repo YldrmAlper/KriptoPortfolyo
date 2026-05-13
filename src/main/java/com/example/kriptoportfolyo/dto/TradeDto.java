@@ -1,13 +1,10 @@
-package com.example.kriptoportfolyo.dto;
+﻿package com.example.kriptoportfolyo.dto;
 
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Trade DTO — İşlem geçmişi görüntüleme ve grafik verileri için kullanılır.
- */
 @Getter
 @Setter
 @NoArgsConstructor

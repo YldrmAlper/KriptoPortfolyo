@@ -14,11 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
-/**
- * Kimlik doğrulama controller sınıfı.
- * Login ve Register sayfalarının gösterimi ile kayıt form işlemlerini yönetir.
- * Spring Security form-based authentication ile entegre çalışır.
- */
 @Controller
 public class AuthController {
 
@@ -28,13 +23,6 @@ public class AuthController {
         this.userService = userService;
     }
 
-    /**
-     * Giriş sayfasını gösterir.
-     * Spring Security'nin loginPage("/login") ayarıyla eşleşir.
-     * URL'de ?error parametresi varsa hata mesajı, ?logout varsa çıkış mesajı gösterilir.
-     *
-     * @return login.html template
-     */
     private boolean isAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken);
@@ -49,9 +37,6 @@ public class AuthController {
     }
 
     /**
-     * Kayıt sayfasını gösterir.
-     * Boş bir UserRegisterDto nesnesini model'e ekleyerek form binding sağlar.
-     *
      * @param model Thymeleaf model
      * @return register.html template
      */
@@ -65,12 +50,6 @@ public class AuthController {
     }
 
     /**
-     * Kayıt formunu işler.
-     * - Jakarta Validation ile form verilerini doğrular
-     * - Doğrulama hatası varsa formu tekrar gösterir (hata mesajlarıyla)
-     * - Başarılı kayıtta /login'e yönlendirir (başarı mesajıyla)
-     * - Service katmanından gelen hatayı ekranda gösterir
-     *
      * @param dto             form verileri (validated)
      * @param result          doğrulama sonuçları
      * @param model           Thymeleaf model
@@ -82,7 +61,6 @@ public class AuthController {
                                BindingResult result,
                                Model model,
                                RedirectAttributes redirectAttributes) {
-        // Her zaman ilk önce kullanıcı adı alınmış mı kontrol et
         if (dto.getUsername() != null && !dto.getUsername().isBlank()
                 && userService.isUsernameTaken(dto.getUsername())) {
             result.rejectValue("username", "error.username", "Bu kullanıcı adı zaten kullanılıyor");

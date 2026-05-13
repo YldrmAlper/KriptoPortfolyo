@@ -14,10 +14,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Dashboard verilerini hesaplayan ve birleştiren ana servis.
- * Net Kar/Zarar, Trade kayıtlarındaki realizedPnl toplamından dinamik olarak hesaplanır.
- */
 @Service
 @Transactional(readOnly = true)
 public class DashboardService {
@@ -34,7 +30,6 @@ public class DashboardService {
     public DashboardSummaryDto getDashboardSummary(Long userId) {
         List<PortfolioItemViewDto> allItems = new ArrayList<>();
 
-        // 1. Manuel eklenen varlıkları al ve ViewDTO'ya çevir
         List<PortfolioItem> manualItems = portfolioItemRepository.findByUserId(userId);
         BigDecimal totalInvestedCost = BigDecimal.ZERO;
 
@@ -58,23 +53,18 @@ public class DashboardService {
             allItems.add(viewDto);
         }
 
-        // 2. Trade kayıtlarından toplam gerçekleşmiş Kar/Zarar hesapla
         BigDecimal totalRealizedPnl = tradeRepository.findByUserIdAndTypeOrderByCreatedAtDesc(userId, "SELL")
                 .stream()
                 .map(t -> t.getRealizedPnl() != null ? t.getRealizedPnl() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // 3. Genel toplamları hesapla
         DashboardSummaryDto summary = new DashboardSummaryDto();
         summary.setDetailedItems(allItems);
         summary.setTotalInvestedCost(totalInvestedCost);
         summary.setTotalRealizedPnl(totalRealizedPnl);
 
-        // Yüzdelik hesaplama kaldırıldı
-
         summary.setTotalAssetsCount(allItems.size());
 
-        // Aktif (farklı) borsa sayısını hesapla
         long activeExchanges = allItems.stream()
                 .map(PortfolioItemViewDto::getExchangeName)
                 .distinct()

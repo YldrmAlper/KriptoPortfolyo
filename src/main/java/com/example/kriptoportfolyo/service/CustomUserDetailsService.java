@@ -7,11 +7,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-/**
- * Spring Security için özel kullanıcı detay servisi.
- * Veritabanından kullanıcı bilgilerini yükleyerek
- * Spring Security'nin kimlik doğrulama mekanizmasına entegre eder.
- */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -22,9 +17,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * Kullanıcı adına göre kullanıcı detaylarını yükler.
-     * Spring Security kimlik doğrulama sürecinde otomatik olarak çağrılır.
-     *
      * @param username giriş yapan kullanıcının adı
      * @return Spring Security UserDetails nesnesi
      * @throws UsernameNotFoundException kullanıcı bulunamazsa

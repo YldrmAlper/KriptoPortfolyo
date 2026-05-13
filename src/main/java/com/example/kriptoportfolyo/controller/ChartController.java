@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.controller;
+﻿package com.example.kriptoportfolyo.controller;
 
 import com.example.kriptoportfolyo.dto.DashboardSummaryDto;
 import com.example.kriptoportfolyo.dto.PortfolioItemViewDto;
@@ -15,10 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Dashboard grafik verilerini sağlayan REST Controller.
- * Chart.js tarafından JSON formatında tüketilir.
- */
 @RestController
 @RequestMapping("/api/charts")
 public class ChartController {
@@ -31,10 +27,7 @@ public class ChartController {
         this.userService = userService;
     }
 
-    /**
-     * Portföy dağılım verilerini (Coin Adı ve Toplam Maliyet) döner.
-     * Doughnut (Pasta) grafiği için kullanılır.
-     */
+    
     @GetMapping("/distribution")
     public ResponseEntity<Map<String, Object>> getPortfolioDistribution(@AuthenticationPrincipal UserDetails userDetails) {
         Long userId = userService.findByUsername(userDetails.getUsername()).getId();

@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.dto;
+﻿package com.example.kriptoportfolyo.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,11 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Kullanıcı kayıt formu DTO sınıfı.
- * Thymeleaf formundan gelen verileri taşır ve doğrulama kurallarını içerir.
- * Entity sınıfına doğrudan bağımlı değildir (Katmanlı Mimari prensibi).
- */
 @Getter
 @Setter
 @NoArgsConstructor

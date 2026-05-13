@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.entity;
+﻿package com.example.kriptoportfolyo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,11 +14,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Kullanıcı entity sınıfı.
- * Spring Security ile entegre çalışarak kimlik doğrulama ve yetkilendirme işlemlerini destekler.
- * Şifreler BCrypt algoritması ile hash'lenerek saklanır.
- */
 @Entity
 @Table(name = "users")
 @Getter

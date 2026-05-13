@@ -11,9 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Coin (Kripto Para) iş mantığı servisi.
- */
 @Service
 public class CoinService {
 
@@ -29,18 +26,12 @@ public class CoinService {
         this.portfolioItemRepository = portfolioItemRepository;
     }
 
-    /**
-     * Kullanıcıya ait tüm coinleri listeler.
-     */
     public List<CoinDto> getUserCoins(Long userId) {
         return coinRepository.findByUserId(userId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Yeni bir coin ekler.
-     */
     @Transactional
     public void addCoin(CoinDto dto, Long userId) {
         User user = userService.findById(userId);
@@ -57,23 +48,17 @@ public class CoinService {
         coinRepository.save(coin);
     }
 
-    /**
-     * ID ve Kullanıcı ID'ye göre coini getirir.
-     */
     public Coin getCoinEntity(Long id, Long userId) {
         return coinRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("Coin bulunamadı"));
     }
 
-    /**
-     * Coin günceller.
-     */
     @Transactional
     public void updateCoin(Long id, CoinDto dto, Long userId) {
         Coin coin = getCoinEntity(id, userId);
         coin.setName(dto.getName());
         coin.setSymbol(dto.getSymbol().toUpperCase());
-        
+
         if (dto.getLogoFile() != null && !dto.getLogoFile().isEmpty()) {
             imageService.validateImage(dto.getLogoFile());
             try {
@@ -86,9 +71,6 @@ public class CoinService {
         coinRepository.save(coin);
     }
 
-    /**
-     * Coin siler. Başka tabloda kullanılıyorsa hata fırlatır.
-     */
     @Transactional
     public void deleteCoin(Long id, Long userId) {
         if (portfolioItemRepository.existsByCoinIdAndUserId(id, userId)) {
@@ -98,9 +80,6 @@ public class CoinService {
         coinRepository.delete(coin);
     }
 
-    /**
-     * Entity -> DTO dönüşümü.
-     */
     private CoinDto convertToDto(Coin entity) {
         CoinDto dto = new CoinDto();
         dto.setId(entity.getId());

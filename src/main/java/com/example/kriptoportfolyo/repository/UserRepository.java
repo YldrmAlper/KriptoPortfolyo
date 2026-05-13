@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.repository;
+﻿package com.example.kriptoportfolyo.repository;
 
 import com.example.kriptoportfolyo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -6,10 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * Kullanıcı veritabanı erişim katmanı.
- * Spring Security entegrasyonu için username ve email ile arama metodları içerir.
- */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 

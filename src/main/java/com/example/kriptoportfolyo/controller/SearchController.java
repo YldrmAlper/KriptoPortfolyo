@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.controller;
+﻿package com.example.kriptoportfolyo.controller;
 
 import com.example.kriptoportfolyo.dto.PortfolioItemDto;
 import com.example.kriptoportfolyo.service.PortfolioService;
@@ -13,10 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * Dinamik Arama API Controller.
- * JavaScript (AJAX) isteklerini karşılar ve JSON formatında sonuç döner.
- */
 @RestController
 @RequestMapping("/api/search")
 public class SearchController {
@@ -29,9 +25,7 @@ public class SearchController {
         this.userService = userService;
     }
 
-    /**
-     * Portföy içinde isim veya sembole göre arama yapar.
-     */
+    
     @GetMapping("/portfolio")
     public ResponseEntity<List<PortfolioItemDto>> searchPortfolio(
             @RequestParam("q") String query,

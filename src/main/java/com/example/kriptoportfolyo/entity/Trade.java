@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.entity;
+﻿package com.example.kriptoportfolyo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,12 +6,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * İşlem (Trade) entity sınıfı.
- * Kullanıcının yaptığı alım/satım işlemlerini kaydeder.
- * type: "BUY" veya "SELL"
- * realizedPnl: Satış işlemlerinde gerçekleşen Kar/Zarar
- */
 @Entity
 @Table(name = "trades")
 @Getter
@@ -37,7 +31,7 @@ public class Trade {
     private Exchange exchange;
 
     @Column(nullable = false, length = 10)
-    private String type; // "BUY" veya "SELL"
+    private String type;
 
     @Column(nullable = false, precision = 18, scale = 8)
     private BigDecimal quantity;
@@ -46,10 +40,10 @@ public class Trade {
     private BigDecimal pricePerUnit;
 
     @Column(name = "total_value", nullable = false, precision = 18, scale = 2)
-    private BigDecimal totalValue; // quantity * pricePerUnit
+    private BigDecimal totalValue;
 
     @Column(name = "realized_pnl", precision = 18, scale = 2)
-    private BigDecimal realizedPnl; // Satışta: (sellPrice - costPerUnit) * quantity
+    private BigDecimal realizedPnl;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

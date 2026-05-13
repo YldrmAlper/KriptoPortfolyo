@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.controller;
+﻿package com.example.kriptoportfolyo.controller;
 
 import com.example.kriptoportfolyo.dto.TradeDto;
 import com.example.kriptoportfolyo.service.TradeService;
@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * İşlem Geçmişi ve Portföy Değişim Grafiği Controller.
- */
 @Controller
 @RequestMapping("/trades")
 public class TradeController {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
 
 <head th:replace="~{fragments/header :: head('Dashboard — KriptoPortföy')}">
@@ -6,13 +6,11 @@
 
 <body>
 
-    <!-- Navbar -->
     <nav th:replace="~{fragments/header :: navbar}"></nav>
 
     <div class="page-content">
         <div class="container">
 
-            <!-- Hoşgeldin Mesajı -->
             <div class="mb-4 d-flex justify-content-between align-items-center">
                 <div>
                     <h3 class="section-title">
@@ -28,9 +26,7 @@
                 </div>
             </div>
 
-            <!-- Özet Kartları -->
             <div class="row g-3 mb-4">
-                <!-- Toplam Yatırım -->
                 <div class="col-md-3 col-6">
                     <div class="stat-card">
                         <div class="stat-value" style="color: #00d2ff;"
@@ -41,7 +37,6 @@
                     </div>
                 </div>
 
-                <!-- Net Kar / Zarar (Gerçekleşmiş - Trade'lerden) -->
                 <div class="col-md-3 col-6">
                     <div class="stat-card">
                         <div class="stat-value"
@@ -53,7 +48,6 @@
                     </div>
                 </div>
 
-                <!-- Varlık Sayısı -->
                 <div class="col-md-3 col-6">
                     <div class="stat-card">
                         <div class="stat-value" style="color: #f7931a;" th:text="${summary.totalAssetsCount}">0</div>
@@ -61,7 +55,6 @@
                     </div>
                 </div>
 
-                <!-- Aktif Borsa -->
                 <div class="col-md-3 col-6">
                     <div class="stat-card">
                         <div class="stat-value" style="color: #00b894;" th:text="${summary.activeExchangesCount}">0
@@ -71,9 +64,7 @@
                 </div>
             </div>
 
-            <!-- Grafikler ve Tablo -->
             <div class="row mb-4">
-                <!-- Portföy Dağılım Grafiği (Chart.js) -->
                 <div class="col-md-4 mb-4 mb-md-0">
                     <div class="dashboard-card h-100 d-flex flex-column align-items-center justify-content-center">
                         <h5 class="text-white mb-3 text-start w-100 border-bottom border-secondary pb-2">Portföy
@@ -84,7 +75,6 @@
                     </div>
                 </div>
 
-                <!-- Varlık Listesi Tablosu -->
                 <div class="col-md-8">
                     <div class="dashboard-card p-0 overflow-hidden h-100">
                         <div class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center"
@@ -117,7 +107,6 @@
                                         th:data-url="@{/chart/detail(symbol=${item.coinSymbol})}"
                                         onclick="window.location.href=this.getAttribute('data-url')"
                                         class="hover-row">
-                                        <!-- Varlık -->
                                         <td class="ps-4">
                                             <div class="d-flex align-items-center">
                                                 <img th:src="@{/images/coin/{id}(id=${item.coinId})}" class="coin-logo me-3" alt="logo" style="width: 32px; height: 32px; border-radius: 50%;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1490/1490919.png'">
@@ -130,7 +119,6 @@
                                             </div>
                                         </td>
 
-                                        <!-- Kaynak -->
                                         <td>
                                             <span class="badge bg-secondary" th:if="${item.source == 'MANUAL'}"
                                                 th:text="${item.exchangeName}"></span>
@@ -138,17 +126,14 @@
                                                 th:text="${item.exchangeName} + ' (API)'"></span>
                                         </td>
 
-                                        <!-- Miktar -->
                                         <td class="text-end"
                                             th:text="${#numbers.formatDecimal(item.quantity, 1, 'COMMA', 4, 'POINT')}">
                                             0.0</td>
 
-                                        <!-- Maliyet -->
                                         <td class="text-end text-secondary"
                                             th:text="'$' + ${#numbers.formatDecimal(item.costPerUnit, 1, 'COMMA', 2, 'POINT')}">
                                             $0.00</td>
 
-                                        <!-- Toplam Maliyet -->
                                         <td class="text-end pe-4 fw-bold" style="color: #00d2ff;"
                                             th:text="'$' + ${#numbers.formatDecimal(item.totalCost, 1, 'COMMA', 2, 'POINT')}">
                                             $0.00</td>
@@ -166,19 +151,14 @@
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <div th:replace="~{fragments/footer :: scripts}"></div>
 
-    <!-- Chart.js Kütüphanesi -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- AJAX Chart Render Scripti -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // AJAX ile Chart verisini çek
             fetch('/api/charts/distribution')
                 .then(response => response.json())
                 .then(data => {
                     const ctx = document.getElementById('portfolioChart').getContext('2d');
-
-                    // Chart.js render
                     new Chart(ctx, {
                         type: 'doughnut',
                         data: {

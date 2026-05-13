@@ -7,11 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Kullanıcı iş mantığı servisi.
- * Kayıt, doğrulama ve kullanıcı sorgulama işlemlerini yönetir.
- * DTO-Entity dönüşümü bu katmanda gerçekleştirilir.
- */
 @Service
 public class UserService {
 
@@ -24,12 +19,6 @@ public class UserService {
     }
 
     /**
-     * Yeni kullanıcı kaydı yapar.
-     * - Kullanıcı adı ve e-posta benzersizlik kontrolü
-     * - Şifre eşleşme kontrolü
-     * - BCrypt ile şifre hash'leme
-     * - Veritabanına kaydetme
-     *
      * @param dto kayıt formu verileri
      * @throws RuntimeException doğrulama hatası durumunda
      */
@@ -57,8 +46,6 @@ public class UserService {
     }
 
     /**
-     * Kullanıcı adının sistemde zaten kayıtlı olup olmadığını kontrol eder.
-     *
      * @param username kontrol edilecek kullanıcı adı
      * @return true ise kullanıcı adı zaten mevcut
      */
@@ -67,8 +54,6 @@ public class UserService {
     }
 
     /**
-     * Kullanıcı adına göre kullanıcıyı bulur.
-     *
      * @param username aranacak kullanıcı adı
      * @return bulunan kullanıcı entity'si
      * @throws RuntimeException kullanıcı bulunamazsa
@@ -79,8 +64,6 @@ public class UserService {
     }
 
     /**
-     * ID'ye göre kullanıcıyı bulur.
-     *
      * @param id kullanıcı ID'si
      * @return bulunan kullanıcı entity'si
      * @throws RuntimeException kullanıcı bulunamazsa

@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.dto;
+﻿package com.example.kriptoportfolyo.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -8,10 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * Coin DTO sınıfı.
- * Kripto para ekleme/listeleme işlemlerinde kullanılır.
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,11 +23,7 @@ public class CoinDto {
     @NotBlank(message = "Sembol boş olamaz")
     @Size(min = 2, max = 20, message = "Sembol 2-20 karakter arasında olmalıdır")
     private String symbol;
-
-    // Frontend'den resim yüklemek için
     private MultipartFile logoFile;
-
-    // Veritabanından gelen resmi frontend'de göstermek için (Base64)
     private String logoBase64;
     private String logoContentType;
 }

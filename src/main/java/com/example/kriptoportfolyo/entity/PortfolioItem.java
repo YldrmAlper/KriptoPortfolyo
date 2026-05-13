@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.entity;
+﻿package com.example.kriptoportfolyo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,12 +19,6 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Portföy varlık entity sınıfı.
- * Kullanıcının portföyündeki her bir kripto varlığı temsil eder.
- * source alanı varlığın "MANUAL" (elle eklenen) veya "API" (borsadan çekilen) olduğunu belirtir.
- * totalCost = quantity * costPerUnit formülüyle hesaplanır.
- */
 @Entity
 @Table(name = "portfolio_items")
 @Getter
@@ -80,9 +74,7 @@ public class PortfolioItem {
         calculateTotalCost();
     }
 
-    /**
-     * Toplam maliyeti otomatik hesaplar: quantity * costPerUnit
-     */
+    
     private void calculateTotalCost() {
         if (this.quantity != null && this.costPerUnit != null) {
             this.totalCost = this.quantity.multiply(this.costPerUnit);

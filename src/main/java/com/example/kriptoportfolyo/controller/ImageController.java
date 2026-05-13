@@ -1,4 +1,4 @@
-package com.example.kriptoportfolyo.controller;
+﻿package com.example.kriptoportfolyo.controller;
 
 import com.example.kriptoportfolyo.entity.Coin;
 import com.example.kriptoportfolyo.entity.Exchange;
@@ -15,11 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-/**
- * Resim Controller sınıfı.
- * Veritabanında BLOB olarak saklanan resimleri dışarı sunmak için alternatif bir yöntemdir.
- * Base64 yerine doğrudan image/png olarak resim dönmek istenirse kullanılabilir.
- */
 @Controller
 public class ImageController {
 

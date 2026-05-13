@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="tr">
 
 <head th:replace="~{fragments/header :: head('Kayıt Ol — KriptoPortföy')}">
@@ -6,7 +6,6 @@
 
 <body class="auth-body d-flex align-items-center justify-content-center" style="min-height: 100vh; overflow-y: auto; padding: 2rem 0;">
 
-<!-- Animasyonlu Arka Plan Parçacıkları -->
 <div class="particles">
     <div class="particle"></div>
     <div class="particle"></div>
@@ -19,7 +18,6 @@
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
 
-            <!-- Logo -->
             <div class="text-center mb-4">
                 <i class="bi bi-currency-bitcoin display-1"
                    style="color: #f7931a; filter: drop-shadow(0 0 20px rgba(247,147,26,0.4));"></i>
@@ -29,11 +27,9 @@
                 <p class="text-secondary">Yeni hesap oluşturun</p>
             </div>
 
-            <!-- Kayıt Kartı -->
             <div class="card auth-card border-0 shadow-lg">
                 <div class="card-body p-4">
 
-                    <!-- Genel Hata Mesajı (Service'den gelen) -->
                     <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show"
                          role="alert">
                         <i class="bi bi-exclamation-triangle-fill me-1"></i>
@@ -45,10 +41,8 @@
                         <i class="bi bi-person-plus me-1"></i> Kayıt Ol
                     </h5>
 
-                    <!-- Kayıt Formu -->
                     <form th:action="@{/register}" method="post" th:object="${userRegisterDto}">
 
-                        <!-- Kullanıcı Adı -->
                         <div class="mb-3">
                             <label for="reg-username" class="form-label text-light">
                                 <i class="bi bi-person me-1"></i> Kullanıcı Adı
@@ -62,7 +56,6 @@
                             </div>
                         </div>
 
-                        <!-- E-posta -->
                         <div class="mb-3">
                             <label for="reg-email" class="form-label text-light">
                                 <i class="bi bi-envelope me-1"></i> E-posta
@@ -76,7 +69,6 @@
                             </div>
                         </div>
 
-                        <!-- Şifre -->
                         <div class="mb-3">
                             <label for="reg-password" class="form-label text-light">
                                 <i class="bi bi-lock me-1"></i> Şifre
@@ -90,7 +82,6 @@
                             </div>
                         </div>
 
-                        <!-- Şifre Tekrarı -->
                         <div class="mb-4">
                             <label for="reg-confirmPassword" class="form-label text-light">
                                 <i class="bi bi-lock-fill me-1"></i> Şifre Tekrarı
@@ -104,13 +95,11 @@
                             </div>
                         </div>
 
-                        <!-- Kayıt Butonu -->
                         <button type="submit" class="btn btn-success-gradient w-100 py-2 fw-semibold">
                             <i class="bi bi-person-check me-1"></i> Kayıt Ol
                         </button>
                     </form>
 
-                    <!-- Giriş Linki -->
                     <div class="text-center mt-3">
                         <span class="text-secondary">Zaten hesabınız var mı?</span>
                         <a th:href="@{/login}" class="text-info text-decoration-none fw-medium">

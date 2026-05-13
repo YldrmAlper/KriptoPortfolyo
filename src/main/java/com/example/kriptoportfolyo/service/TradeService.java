@@ -10,9 +10,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * İşlem (Trade) geçmişi servisi.
- */
 @Service
 @Transactional(readOnly = true)
 public class TradeService {
@@ -23,18 +20,12 @@ public class TradeService {
         this.tradeRepository = tradeRepository;
     }
 
-    /**
-     * Kullanıcının tüm işlem geçmişini getirir.
-     */
     public List<TradeDto> getUserTrades(Long userId) {
         return tradeRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Toplam gerçekleşmiş PnL hesaplar.
-     */
     public BigDecimal getTotalRealizedPnl(Long userId) {
         return tradeRepository.findByUserIdAndTypeOrderByCreatedAtDesc(userId, "SELL").stream()
                 .map(t -> t.getRealizedPnl() != null ? t.getRealizedPnl() : BigDecimal.ZERO)
